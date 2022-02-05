@@ -7,9 +7,13 @@ public class Request {
     private final String account;
     private Email email = null;
 
-    public Request(RequestType type, String account, Email email) {
+    public Request(RequestType type, String account) {
         this.type = type;
         this.account = account;
+    }
+    public Request(RequestType type, Email email) {
+        this.type = type;
+        this.account = email.getSender();
         if (type != RequestType.PullMessages) {
             this.email = email;
         }

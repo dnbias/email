@@ -5,7 +5,6 @@ import org.prog3.email.server.Logger;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
 
 public class DeleteMessage extends ServerTask {
     Email email;

@@ -16,12 +16,17 @@ public class SendMessageList extends ServerTask {
     public Void call() {
         try {
             ArrayList<Email> emails = model.getEmails(account);
-            out.writeObject(emails);
-            out.flush();
+            Logger.log(socket + " - Got email list (" + account + ")");
+            out.writeObject("OK");
+            for (Email email : emails) {
+                out.writeObject(email);
+                out.flush();
+            }
+            out.writeObject("End of stream");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Logger.log("Sent emails list: " + account);
+        Logger.log(socket + " - Sent email list(" + account + ")");
         closeStreams();
         return null;
     }

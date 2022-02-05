@@ -23,7 +23,7 @@ public class SendMessage extends ServerTask {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Logger.log("Sent email - " + "from:"+ account + " to:" + email.getReceivers());
+        Logger.log(socket + " - Sent email - " + "from:"+ account + " to:" + email.getReceivers());
         closeStreams();
         return null;
     }

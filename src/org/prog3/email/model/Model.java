@@ -2,15 +2,16 @@ package org.prog3.email.model;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.prog3.email.server.Logger;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Model {
@@ -25,7 +26,7 @@ public class Model {
         String path = "./Emails/" + account;
         File fileAccount = new File(path);
         if (!fileAccount.mkdir()) {
-            System.out.println("Account already exists: " + account);
+            Logger.log("AddAccount - Account already exists: " + account);
         }
     }
 
@@ -53,16 +54,29 @@ public class Model {
 
     public synchronized ArrayList<Email> getEmails(String account){
         String path = "./Emails/" + account;
-        ArrayList emails = new ArrayList();
-        try (Stream<Path> stream = Files.list(Path.of(path))) {
-            stream
-                    .filter((Files::isRegularFile))
-                    .forEach(emails::add);
+        ArrayList<Email> emails = new ArrayList<>();
+        try {
+            List<Path> files = Files.list(Path.of(path)).toList();
+            for (Path f : files) {
+                emails.add(makeEmail(f));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return emails;
+    }
+
+
+    private Email makeEmail(Path filename) {
+        Email email = null;
+        try (Reader reader = new FileReader(filename.toString())) {
+            Gson gson = new GsonBuilder().create();
+            email = gson.fromJson(reader, Email.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return email;
     }
 
     private void makeJSON(Email email, String receiver) {
@@ -71,7 +85,7 @@ public class Model {
         try (Writer writer = new FileWriter(emailFilename)) {
             Gson gson = new GsonBuilder().create();
             gson.toJson(email, writer);
-            System.out.println("Email written: " + emailFilename);
+            Logger.log("Written email: " + emailFilename);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -108,6 +122,6 @@ public class Model {
         addEmail(email1);
         addEmail(email2);
 
-        System.out.println("Model initialized with test contents");
+        Logger.log("Model initialized with test contents");
     }
 }

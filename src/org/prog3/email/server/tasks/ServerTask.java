@@ -29,8 +29,8 @@ abstract class ServerTask implements Callable<Void> {
 
     private void openStreams() {
         try {
-            this.in = (ObjectInputStream) socket.getInputStream();
-            this.out = (ObjectOutputStream) socket.getOutputStream();
+            this.in = new ObjectInputStream(socket.getInputStream());
+            this.out = new ObjectOutputStream(socket.getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }

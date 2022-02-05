@@ -7,9 +7,9 @@ import java.util.List;
 
 public class Email {
     private int id;
-    private String sender, subject, body;
-    private List<String> receivers;
-    private Calendar date;
+    private final String sender, subject, body;
+    private final List<String> receivers;
+    private final Calendar date;
 
     public Email(String sender, List<String> receivers, String subject, String body, Calendar date) {
         this.sender = sender;
