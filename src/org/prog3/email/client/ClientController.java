@@ -1,13 +1,16 @@
 package org.prog3.email.client;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
-import org.prog3.email.Email;
+import org.prog3.email.model.Email;
 
-import java.util.List;
+import java.io.IOException;
+import java.util.Calendar;
 
 public class ClientController {
     @FXML
@@ -20,45 +23,69 @@ public class ClientController {
     private Label lblSubject;
 
     @FXML
-    private Label lblUsername;
+    private Label lblDate;
 
     @FXML
-    private TextArea txtEmailContent;
+    private Label boxAccount;
 
     @FXML
-    private ListView<Email> lstEmails;
+    private TextArea txtBody;
 
-    private Client model;
+    @FXML
+    private TableView<Email> tableEmails;
+
+    private Client client;
     private Email selectedEmail;
     private Email emptyEmail;
 
+    private boolean composing = false;
+
     @FXML
-    public void initialize(){
-        if (this.model != null)
+    public void initialize(Client model){
+        if (client != null)
             throw new IllegalStateException("Model can only be initialized once");
 
-        model = new Client("studente@unito.it");
-        model.generateRandomEmails(10);
+        client = model;
 
         selectedEmail = null;
 
-        lstEmails.itemsProperty().bind(model.inboxProperty());
-        lstEmails.setOnMouseClicked(this::showSelectedEmail);
-        lblUsername.textProperty().bind(model.emailAddressProperty());
+        ObservableList<Email> data = FXCollections.observableArrayList();
 
-        emptyEmail = new Email("", List.of(""), "", "");
+        tableEmails.itemsProperty().bind(model.inboxProperty());
+        tableEmails.setOnMouseClicked(this::showSelectedEmail);
+        boxAccount.textProperty().bind(model.accountProperty());
+
+        emptyEmail = new Email("", "", "", "", Calendar.getInstance());
 
         updateDetailView(emptyEmail);
+
+        try {
+            client.pullEmails();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
     protected void onDeleteButtonClick() {
-        model.deleteEmail(selectedEmail);
+        try {
+            client.deleteEmail(selectedEmail);
+            updateDetailView(emptyEmail);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    protected void onComposeButtonClick() {
         updateDetailView(emptyEmail);
+        composing = true;
     }
 
     protected void showSelectedEmail(MouseEvent mouseEvent) {
-        Email email = lstEmails.getSelectionModel().getSelectedItem();
+        Email email = tableEmails.getSelectionModel().getSelectedItem();
 
         selectedEmail = email;
         updateDetailView(email);
@@ -68,8 +95,9 @@ public class ClientController {
         if(email != null) {
             lblFrom.setText(email.getSender());
             lblTo.setText(String.join(", ", email.getReceivers()));
+            lblDate.setText(email.getDate().toString());
             lblSubject.setText(email.getSubject());
-            txtEmailContent.setText(email.getText());
+            txtBody.setText(email.getBody());
         }
     }
 

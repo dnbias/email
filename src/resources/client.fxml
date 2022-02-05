@@ -7,7 +7,7 @@
 <?import javafx.scene.text.*?>
 <?import javafx.stage.*?>
 
-<Stage xmlns="http://javafx.com/javafx/11.0.3-internal" xmlns:fx="http://javafx.com/fxml/1">
+<Stage xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <scene>
       <Scene>
          <root>
@@ -17,7 +17,7 @@
                      <children>
                         <VBox alignment="TOP_CENTER" layoutX="-15.0" prefHeight="569.0" prefWidth="221.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
-                              <ChoiceBox fx:id="accountList" prefHeight="26.0" prefWidth="213.0" />
+                              <ChoiceBox fx:id="boxAccount" prefHeight="26.0" prefWidth="213.0" />
                               <Separator prefHeight="39.0" prefWidth="213.0" />
                               <TreeView prefHeight="389.0" prefWidth="213.0" />
                               <Separator layoutX="15.0" layoutY="41.0" prefHeight="39.0" prefWidth="213.0" />
@@ -53,7 +53,7 @@
                                        <children>
                                           <ToolBar prefHeight="16.0" prefWidth="575.0">
                                             <items>
-                                                <Button fx:id="replyButton" layoutX="20.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#Reply" prefHeight="20.0" prefWidth="20.0">
+                                                <Button fx:id="replyButton" layoutX="20.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onReplyButtonClick" prefHeight="20.0" prefWidth="20.0">
                                                    <opaqueInsets>
                                                       <Insets />
                                                    </opaqueInsets>
@@ -61,7 +61,7 @@
                                                       <Insets right="5.0" />
                                                    </padding>
                                                 </Button>
-                                                <Button fx:id="forwardButton" layoutX="34.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#Forward" prefHeight="20.0" prefWidth="20.0">
+                                                <Button fx:id="forwardButton" layoutX="34.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onForwardButtonClick" prefHeight="20.0" prefWidth="20.0">
                                                    <opaqueInsets>
                                                       <Insets />
                                                    </opaqueInsets>
@@ -79,7 +79,7 @@
                                                 </Button>
                                             </items>
                                           </ToolBar>
-                                          <TableView prefHeight="317.0" prefWidth="560.0">
+                                          <TableView fx:id="tableEmails" prefHeight="317.0" prefWidth="560.0">
                                             <columns>
                                                 <TableColumn editable="false" prefWidth="27.0" sortable="false" />
                                               <TableColumn editable="false" prefWidth="204.0" text="Subject" />
@@ -134,22 +134,22 @@
                                                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                   </rowConstraints>
                                                    <children>
-                                                      <TextField minHeight="-Infinity" prefHeight="20.0" prefWidth="412.0" text="Lorem">
+                                                      <TextField fx:id="lblSubject" minHeight="-Infinity" prefHeight="20.0" prefWidth="412.0" text="Lorem">
                                                          <font>
                                                             <Font size="11.0" />
                                                          </font>
                                                       </TextField>
-                                                      <TextField minHeight="-Infinity" prefHeight="20.0" text="pippo@prog.it" GridPane.rowIndex="1">
+                                                      <TextField fx:id="lblFrom" minHeight="-Infinity" prefHeight="20.0" text="pippo@prog.it" GridPane.rowIndex="1">
                                                          <font>
                                                             <Font size="11.0" />
                                                          </font>
                                                       </TextField>
-                                                      <TextField minHeight="-Infinity" prefHeight="20.0" text="papero@prog.it" GridPane.rowIndex="2">
+                                                      <TextField fx:id="lblTo" minHeight="-Infinity" prefHeight="20.0" text="papero@prog.it" GridPane.rowIndex="2">
                                                          <font>
                                                             <Font size="11.0" />
                                                          </font>
                                                       </TextField>
-                                                      <TextField minHeight="-Infinity" prefHeight="20.0" text="29/10/2001" GridPane.rowIndex="3">
+                                                      <TextField fx:id="lblDate" minHeight="-Infinity" prefHeight="20.0" text="29/10/2001" GridPane.rowIndex="3">
                                                          <font>
                                                             <Font size="11.0" />
                                                          </font>
@@ -171,7 +171,7 @@
                                                 <Pane maxWidth="-Infinity" minWidth="-Infinity" nodeOrientation="RIGHT_TO_LEFT" prefHeight="10.0" prefWidth="100.0" HBox.hgrow="NEVER" />
                                              </children>
                                           </HBox>
-                                          <TextArea editable="false" prefHeight="169.0" prefWidth="212.0" text="Lorem Ipsum " wrapText="true">
+                                          <TextArea fx:id="txtBody" editable="false" prefHeight="169.0" prefWidth="212.0" text="Lorem Ipsum " wrapText="true">
                                              <VBox.margin>
                                                 <Insets top="4.0" />
                                              </VBox.margin>
