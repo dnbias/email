@@ -70,7 +70,6 @@ public class Client extends Application {
 
         assert url != null;
 
-
         FXMLLoader loader = new FXMLLoader(url);
         loader.setController(controller);
         stage.setTitle("Email Client");

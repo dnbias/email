@@ -1,20 +1,16 @@
 package org.prog3.email.server.ui;
 
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseEvent;
-import org.prog3.email.model.Email;
+import org.prog3.email.model.Model;
 
 public class ServerController {
 
+    private Model serverModel = null;
     @FXML
-    public void initialize() {
+    public void initialize(Model model) {
+        if (serverModel != null)
+            throw new IllegalStateException("Model can only be initialized once");
 
+        serverModel = model;
     }
 }

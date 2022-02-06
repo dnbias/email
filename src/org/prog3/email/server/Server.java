@@ -33,12 +33,14 @@ public class Server extends Application {
     private static ServerController controller;
     private static boolean running = true;
 
+    public Server() {
+        model = new Model();
+        controller = new ServerController();
+    }
+
     @Override
     public void start(Stage stage) throws Exception {
-        model = new Model();
-        model.init();
 
-        controller = new ServerController();
 
         Logger.log("Server Started");
         SetupShutdown();
@@ -54,7 +56,7 @@ public class Server extends Application {
         stage = loader.load();
         stage.setHeight(800);
         stage.setWidth(1000);
-        stage.initStyle(StageStyle.UNDECORATED);
+        //stage.initStyle(StageStyle.UNDECORATED);
 
         JMetro jMetro = new JMetro(Style.DARK);
         jMetro.setScene(stage.getScene());
