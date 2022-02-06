@@ -1,24 +1,28 @@
 package org.prog3.email.model;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import org.prog3.email.server.tasks.MakeEmail;
+import org.prog3.email.server.tasks.MakeJSON;
+import org.prog3.email.server.tasks.ServerTask;
 import org.util.logger.*;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class Model {
     File emailsDir = null;
+    private static ThreadPoolExecutor executorImporting, executorExporting;
+    public static int NUM_THREADS = 4;
 
     public Model() {
         emailsDir = new File("Emails");
         if (!emailsDir.exists()) {
             emailsDir.mkdir();
         }
+        executorImporting = (ThreadPoolExecutor) Executors.newFixedThreadPool(NUM_THREADS/2);
+        executorExporting = (ThreadPoolExecutor) Executors.newFixedThreadPool(NUM_THREADS/2);
     }
 
     public void addAccount(String account) {
@@ -51,19 +55,27 @@ public class Model {
         return r;
     }
 
-    public synchronized ArrayList<Email> getEmails(String account){
+    public ArrayList<Email> getEmails(String account){
         String path = "." + File.separator + emailsDir + File.separator + account;
         File accountDir = new File(path);
-        if (!accountDir.exists()) {
-            accountDir.mkdir();
+        Collection<FutureTask<Email>> tasks = new LinkedList<>();
+
+        synchronized (this) {
+            if (!accountDir.exists()) {
+                accountDir.mkdir();
+            }
         }
+
         ArrayList<Email> emails = new ArrayList<>();
         try {
             List<Path> files = Files.list(Path.of(path)).toList();
             for (Path f : files) {
-                emails.add(makeEmail(f));
+                makeEmail(f, tasks);
             }
-        } catch (IOException e) {
+            for (FutureTask<Email> currentTask : tasks) { // Wait for the threads to finish
+                currentTask.get();
+            }
+        } catch (InterruptedException | ExecutionException | IOException e) {
             Logger.log(e.getMessage());
             e.printStackTrace();
         }
@@ -71,41 +83,16 @@ public class Model {
         return emails;
     }
 
-    private Email makeEmail(Path filename) {
-        Email email = null;
-        try (Reader reader = new FileReader(filename.toString())) {
-            Gson gson = new GsonBuilder().create();
-            email = gson.fromJson(reader, Email.class);
-        } catch (IOException e) {
-            Logger.log(e.getMessage());
-            e.printStackTrace();
-        }
-        return email;
+    private void makeEmail(Path filename, Collection<FutureTask<Email>> tasks) {
+        MakeEmail task = new MakeEmail(filename, this);
+        FutureTask<Email> future = new FutureTask<>(task);
+        executorImporting.submit(future);
+        tasks.add(future);
     }
 
     private void makeJSON(Email email, String account) {
-        try {
-            String s = File.separator;
-            long time = email.getDate().getTime();
-            File accountDir = new File("." + s + emailsDir.getName() + s +  account);
-            File emailFile = new File( accountDir + s + time + ".json");
-            if (!accountDir.exists()) {
-                accountDir.mkdir();
-            }
-            if (!emailFile.createNewFile()) {
-                Logger.log("Email " + account + s + emailFile.getName() + " already exists");
-                return;
-            }
-            Writer writer = new FileWriter(emailFile);
-            Gson gson = new GsonBuilder().create();
-            gson.toJson(email, writer);
-            writer.flush();
-            writer.close();
-            Logger.log("Written email: " + account + s + emailFile.getName());
-        } catch (IOException e) {
-            Logger.log(e.getLocalizedMessage());
-            e.printStackTrace();
-        }
+        ServerTask task = new MakeJSON(email, account, emailsDir,this);
+        executorExporting.execute(task);
     }
 
     public void init() {

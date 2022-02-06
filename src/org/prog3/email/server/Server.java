@@ -41,14 +41,12 @@ public class Server extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-
         Logger.log("Server Started");
         SetupShutdown();
 
         URL url = getClass().getResource("/server.fxml");
 
         assert url != null;
-
 
         FXMLLoader loader = new FXMLLoader(url);
         loader.setController(controller);
@@ -63,7 +61,7 @@ public class Server extends Application {
 
         stage.show();
 
-        Platform.runLater(() -> listen(PORT));
+        new Thread( () -> listen(PORT)).start();
 
         Logger.log("Server Initialized\n");
     }

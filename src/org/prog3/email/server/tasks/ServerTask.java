@@ -1,6 +1,7 @@
 package org.prog3.email.server.tasks;
 
 import org.prog3.email.model.*;
+import org.prog3.email.server.Server;
 import org.util.logger.*;
 
 import java.io.IOException;
@@ -14,6 +15,8 @@ public abstract class ServerTask implements Runnable {
     Socket socket;
     ObjectInputStream in;
     ObjectOutputStream out;
+
+    public ServerTask() {}
 
     public ServerTask(ObjectOutputStream out, ObjectInputStream in) {
         this.out = out;
