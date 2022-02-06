@@ -9,7 +9,7 @@
 
 <Stage xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <scene>
-      <Scene>
+      <Scene fill="BLACK">
          <root>
             <SplitPane dividerPositions="0.29797979797979796" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="638.0" prefWidth="823.0">
               <items>
@@ -26,7 +26,7 @@
                                     <Insets />
                                  </VBox.margin>
                                  <center>
-                                    <Button fx:id="composeButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#Compose" text="Compose" textAlignment="CENTER">
+                                    <Button fx:id="btnCompose" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onComposeButtonClick" text="Compose" textAlignment="CENTER">
                                        <font>
                                           <Font name="System Bold" size="18.0" />
                                        </font>
@@ -53,7 +53,7 @@
                                        <children>
                                           <ToolBar prefHeight="16.0" prefWidth="575.0">
                                             <items>
-                                                <Button fx:id="replyButton" layoutX="20.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onReplyButtonClick" prefHeight="20.0" prefWidth="20.0">
+                                                <Button fx:id="btnReply" layoutX="20.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onReplyButtonClick" prefHeight="20.0" prefWidth="20.0">
                                                    <opaqueInsets>
                                                       <Insets />
                                                    </opaqueInsets>
@@ -61,7 +61,7 @@
                                                       <Insets right="5.0" />
                                                    </padding>
                                                 </Button>
-                                                <Button fx:id="forwardButton" layoutX="34.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onForwardButtonClick" prefHeight="20.0" prefWidth="20.0">
+                                                <Button fx:id="btnForward" layoutX="34.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onForwardButtonClick" prefHeight="20.0" prefWidth="20.0">
                                                    <opaqueInsets>
                                                       <Insets />
                                                    </opaqueInsets>
@@ -69,7 +69,7 @@
                                                       <Insets right="5.0" />
                                                    </padding>
                                                 </Button>
-                                                <Button fx:id="deleteButton" layoutX="58.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#Delete" prefHeight="20.0" prefWidth="20.0">
+                                                <Button fx:id="btnDelete" layoutX="58.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onDeleteButtonClick" prefHeight="20.0" prefWidth="20.0">
                                                    <opaqueInsets>
                                                       <Insets />
                                                    </opaqueInsets>
@@ -81,10 +81,10 @@
                                           </ToolBar>
                                           <TableView fx:id="tableEmails" prefHeight="317.0" prefWidth="560.0">
                                             <columns>
-                                                <TableColumn editable="false" prefWidth="27.0" sortable="false" />
-                                              <TableColumn editable="false" prefWidth="204.0" text="Subject" />
-                                              <TableColumn editable="false" prefWidth="205.0" text="From" />
-                                                <TableColumn editable="false" prefWidth="123.0" text="Date" />
+                                              <TableColumn fx:id="tableColSubject" editable="false" prefWidth="153.0" text="Subject" />
+                                                <TableColumn fx:id="tableColTo" editable="false" prefWidth="115.0" sortable="false" text="To" />
+                                              <TableColumn fx:id="tableColFrom" editable="false" prefWidth="168.0" text="From" />
+                                                <TableColumn fx:id="tableColDate" editable="false" prefWidth="123.0" text="Date" />
                                             </columns>
                                           </TableView>
                                        </children>
