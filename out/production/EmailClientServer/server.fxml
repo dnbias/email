@@ -4,11 +4,12 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.stage.*?>
 
 <Stage height="700.0" minHeight="500.0" minWidth="700.0" width="1000.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
     <scene>
-        <Scene>
+        <Scene stylesheets="@darkstyle.css">
             <AnchorPane prefHeight="577.0" prefWidth="679.0">
             <children>
                <SplitPane dividerPositions="0.2791728212703102" layoutX="240.0" layoutY="223.0" prefHeight="577.0" prefWidth="679.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -19,10 +20,13 @@
                               <children>
                                  <HBox prefHeight="29.0" prefWidth="186.0">
                                     <children>
-                                       <Separator layoutX="38.0" layoutY="10.0" minHeight="-Infinity" orientation="VERTICAL" prefHeight="17.0" prefWidth="8.0" />
-                                       <Label text="Label" />
-                                       <Separator minHeight="-Infinity" orientation="VERTICAL" prefHeight="0.0" prefWidth="91.0" />
-                                       <Label layoutX="10.0" layoutY="10.0" text="Label" />
+                                       <Separator layoutX="38.0" layoutY="10.0" minHeight="-Infinity" opacity="0.0" orientation="VERTICAL" prefHeight="17.0" prefWidth="8.0" />
+                                       <Label prefHeight="15.0" prefWidth="120.0" text="Clients Connected:">
+                                          <font>
+                                             <Font name="Tahoma Bold" size="12.0" />
+                                          </font></Label>
+                                       <Separator minHeight="-Infinity" opacity="0.0" orientation="VERTICAL" prefHeight="17.0" prefWidth="15.0" />
+                                       <Label alignment="CENTER_RIGHT" layoutX="10.0" layoutY="10.0" prefHeight="17.0" prefWidth="34.0" text="100" textAlignment="RIGHT" />
                                     </children>
                                  </HBox>
                                  <ListView prefHeight="606.0" prefWidth="186.0" />

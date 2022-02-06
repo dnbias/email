@@ -9,7 +9,7 @@
 
 <Stage xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <scene>
-      <Scene fill="BLACK">
+      <Scene fill="BLACK" stylesheets="@darkstyle.css">
          <root>
             <SplitPane dividerPositions="0.29797979797979796" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="638.0" prefWidth="823.0">
               <items>
@@ -51,8 +51,9 @@
                                  <children>
                                     <VBox layoutX="-0.5" layoutY="-0.5" prefHeight="339.0" prefWidth="570.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <children>
-                                          <ToolBar prefHeight="16.0" prefWidth="575.0">
+                                          <ToolBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="16.0" prefWidth="575.0">
                                             <items>
+                                                <Separator opacity="0.0" prefHeight="20.0" prefWidth="8.0" />
                                                 <Button fx:id="btnReply" layoutX="20.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onReplyButtonClick" prefHeight="20.0" prefWidth="20.0">
                                                    <opaqueInsets>
                                                       <Insets />
@@ -61,6 +62,7 @@
                                                       <Insets right="5.0" />
                                                    </padding>
                                                 </Button>
+                                                <Separator layoutX="10.0" layoutY="10.0" opacity="0.0" prefHeight="20.0" prefWidth="8.0" />
                                                 <Button fx:id="btnForward" layoutX="34.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onForwardButtonClick" prefHeight="20.0" prefWidth="20.0">
                                                    <opaqueInsets>
                                                       <Insets />
@@ -69,6 +71,7 @@
                                                       <Insets right="5.0" />
                                                    </padding>
                                                 </Button>
+                                                <Separator layoutX="46.0" layoutY="10.0" opacity="0.0" prefHeight="20.0" prefWidth="8.0" />
                                                 <Button fx:id="btnDelete" layoutX="58.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onDeleteButtonClick" prefHeight="20.0" prefWidth="20.0">
                                                    <opaqueInsets>
                                                       <Insets />
@@ -96,7 +99,7 @@
                               </AnchorPane>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                                  <children>
-                                    <VBox prefHeight="257.0" prefWidth="525.0">
+                                    <VBox prefHeight="285.0" prefWidth="568.0">
                                        <children>
                                           <HBox prefHeight="131.0" prefWidth="493.0">
                                              <VBox.margin>

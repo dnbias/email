@@ -2,7 +2,7 @@ package org.prog3.email.model;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.prog3.email.server.Logger;
+import org.util.logger.*;
 
 import java.io.*;
 import java.nio.file.Files;

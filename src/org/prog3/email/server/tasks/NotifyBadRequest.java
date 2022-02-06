@@ -1,12 +1,10 @@
 package org.prog3.email.server.tasks;
 
-import org.prog3.email.AppendingObjectOutputStream;
-import org.prog3.email.server.Logger;
+import org.util.logger.*;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.Socket;
 
 public class NotifyBadRequest extends ServerTask {
     public NotifyBadRequest(ObjectOutputStream out, ObjectInputStream in) {

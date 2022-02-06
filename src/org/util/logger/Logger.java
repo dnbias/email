@@ -1,4 +1,4 @@
-package org.prog3.email.server;
+package org.util.logger;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

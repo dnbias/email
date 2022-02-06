@@ -8,6 +8,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 
 
+import jfxtras.styles.jmetro.JMetro;
+import jfxtras.styles.jmetro.Style;
 import org.prog3.email.model.Email;
 import org.prog3.email.client.ui.*;
 import org.prog3.email.client.model.tasks.*;
@@ -62,11 +64,12 @@ public class Client extends Application {
     @Override
     public void start(Stage stage) throws Exception{
         executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(NUM_THREADS);
-        tasks = new Vector<ClientTask>();
+        tasks = new Vector<>();
 
         URL url = getClass().getResource("/client.fxml");
 
         assert url != null;
+
 
         FXMLLoader loader = new FXMLLoader(url);
         loader.setController(controller);
@@ -74,6 +77,10 @@ public class Client extends Application {
         stage = loader.load();
         stage.setHeight(800);
         stage.setWidth(1000);
+
+        JMetro jMetro = new JMetro(Style.DARK);
+        jMetro.setScene(stage.getScene());
+
         stage.show();
         System.out.println("Executed...");
         controller.initialize(this);

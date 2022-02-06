@@ -1,14 +1,11 @@
 package org.prog3.email.server.tasks;
 
-import org.prog3.email.AppendingObjectOutputStream;
-import org.prog3.email.model.Email;
-import org.prog3.email.model.Model;
-import org.prog3.email.server.Logger;
+import org.prog3.email.model.*;
+import org.util.logger.*;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.Socket;
 
 public class SendMessage extends ServerTask {
     Email email;

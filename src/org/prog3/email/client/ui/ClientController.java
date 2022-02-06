@@ -20,40 +20,25 @@ import org.prog3.email.client.model.*;
 
 public class ClientController {
     @FXML
-    TextField lblFrom;
+    TextField lblFrom, lblTo, lblSubject, lblDate;
 
     @FXML
-    TextField lblTo;
+    ChoiceBox<String> boxAccount;
 
     @FXML
-    TextField lblSubject;
+    TextArea txtBody;
 
     @FXML
-    public TextField lblDate;
+    TableView<Email> tableEmails;
 
     @FXML
-    public ChoiceBox<String> boxAccount;
+    TableColumn<Email, List<String>> tableColTo;
 
     @FXML
-    public TextArea txtBody;
+    TableColumn<Email, String> tableColFrom, tableColSubject, tableColDate;
 
     @FXML
-    public TableView<Email> tableEmails;
-
-    @FXML
-    public TableColumn<Email, String> tableColFrom;
-
-    @FXML
-    public TableColumn<Email, List<String>> tableColTo;
-
-    @FXML
-    public TableColumn<Email, String> tableColSubject;
-
-    @FXML
-    public TableColumn<Email, String> tableColDate;
-
-    @FXML
-    public Button btnCompose, btnReply, btnDelete, btnForward;
+    Button btnCompose, btnReply, btnDelete, btnForward;
 
     private Client client;
     private Email selectedEmail;
@@ -92,7 +77,7 @@ public class ClientController {
     }
 
 
-    public void setTableCellFactories() {
+    void setTableCellFactories() {
         tableColSubject.setCellValueFactory(new PropertyValueFactory<>("subject"));
         tableColFrom.setCellValueFactory(new PropertyValueFactory<>("sender"));
         tableColTo.setCellValueFactory(new PropertyValueFactory<>("receivers"));
@@ -101,7 +86,7 @@ public class ClientController {
 
 
     @FXML
-    public void onDeleteButtonClick() {
+    void onDeleteButtonClick() {
         if (selectedEmail != null) {
             client.deleteEmail(selectedEmail);
             updateDetailView(emptyEmail);
@@ -109,7 +94,7 @@ public class ClientController {
     }
 
     @FXML
-    public void onReplyButtonClick() {
+    void onReplyButtonClick() {
         Email selected = tableEmails.getSelectionModel().getSelectedItem();
         if (selected != null) {
             Email newEmail =
@@ -120,7 +105,7 @@ public class ClientController {
     }
 
     @FXML
-    public void onForwardButtonClick() {
+    void onForwardButtonClick() {
         Email selected = tableEmails.getSelectionModel().getSelectedItem();
         if (selected != null) {
             Email newEmail =
@@ -132,7 +117,7 @@ public class ClientController {
     }
 
     @FXML
-    public void onComposeButtonClick() {
+    void onComposeButtonClick() {
         updateDetailView(emptyEmail);
         composingContent = true;
     }

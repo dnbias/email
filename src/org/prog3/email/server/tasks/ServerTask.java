@@ -1,14 +1,12 @@
 package org.prog3.email.server.tasks;
 
-import org.prog3.email.AppendingObjectOutputStream;
 import org.prog3.email.model.*;
-import org.prog3.email.server.Logger;
+import org.util.logger.*;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.concurrent.Callable;
 
 public abstract class ServerTask implements Runnable {
     String account;
