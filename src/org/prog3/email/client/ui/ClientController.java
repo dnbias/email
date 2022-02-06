@@ -96,7 +96,7 @@ public class ClientController {
         tableColSubject.setCellValueFactory(new PropertyValueFactory<>("subject"));
         tableColFrom.setCellValueFactory(new PropertyValueFactory<>("sender"));
         tableColTo.setCellValueFactory(new PropertyValueFactory<>("receivers"));
-        tableColDate.setCellValueFactory(cellData -> new SimpleStringProperty((cellData.getValue().toString())));
+        tableColDate.setCellValueFactory(cellData -> new SimpleStringProperty((cellData.getValue().getDate().toString())));
     }
 
 

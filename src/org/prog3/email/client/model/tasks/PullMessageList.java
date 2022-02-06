@@ -38,12 +38,10 @@ public class PullMessageList extends ClientTask {
             inbox.removeAll();
             System.out.println("Read input");
             input = in.readObject();
-            System.out.println("Read correctly: " + input);
 
 
             while (input instanceof Email e) {
                 inbox.add(e);
-                System.out.println(e);
                 input = in.readObject();
             }
 
@@ -55,12 +53,12 @@ public class PullMessageList extends ClientTask {
                     System.out.println("Error during MailInbox stream");
                 }
             }
-            closeConnection();
         } catch (EOFException eof) {
             System.out.println("MailInbox stream finished");
-            closeConnection();
         } catch (IOException | ClassNotFoundException e){
             e.printStackTrace();
+        } finally {
+            closeConnection();
         }
     }
 }

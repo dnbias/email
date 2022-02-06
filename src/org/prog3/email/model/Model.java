@@ -52,7 +52,11 @@ public class Model {
     }
 
     public synchronized ArrayList<Email> getEmails(String account){
-        String path = "." + File.separator + "Emails" + File.separator + account;
+        String path = "." + File.separator + emailsDir + File.separator + account;
+        File accountDir = new File(path);
+        if (!accountDir.exists()) {
+            accountDir.mkdir();
+        }
         ArrayList<Email> emails = new ArrayList<>();
         try {
             List<Path> files = Files.list(Path.of(path)).toList();
@@ -88,7 +92,7 @@ public class Model {
             if (!accountDir.exists()) {
                 accountDir.mkdir();
             }
-            if (emailFile.createNewFile()) {
+            if (!emailFile.createNewFile()) {
                 Logger.log("Email " + account + s + emailFile.getName() + " already exists");
                 return;
             }

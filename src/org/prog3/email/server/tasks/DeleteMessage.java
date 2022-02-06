@@ -23,7 +23,7 @@ public class DeleteMessage extends ServerTask {
             String message = model.deleteEmail(email) ? "OK" : "ERROR";
             out.writeObject(message);
             out.flush();
-            Logger.log(socket + " - Deleted email: " +
+            Logger.log("Deleted email: " +
                     account + "/" + email.getSender() + "/" + email.getDate().getTime() + ".json");
             closeStreams();
         } catch (IOException e) {

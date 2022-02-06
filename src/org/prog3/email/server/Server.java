@@ -90,7 +90,7 @@ public class Server {
     public static void main(String[] args) {
 
         model = new Model();
-        //model.init();
+        model.init();
 
         Logger.log("Server Started");
         SetupShutdown();
