@@ -1,6 +1,8 @@
 package org.prog3.email;
 
-public enum RequestType {
+import java.io.Serializable;
+
+public enum RequestType implements Serializable {
     PullMessages,
     PushMessage,
     DeleteMessage

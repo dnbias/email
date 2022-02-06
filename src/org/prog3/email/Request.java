@@ -2,7 +2,9 @@ package org.prog3.email;
 
 import org.prog3.email.model.*;
 
-public class Request {
+import java.io.Serializable;
+
+public class Request implements Serializable {
     private final RequestType type;
     private final String account;
     private Email email = null;

@@ -1,24 +1,27 @@
 package org.prog3.email.model;
 
+import javafx.beans.value.ObservableValue;
+
+import java.io.Serializable;
+
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class Email {
-    private int id;
+public class Email implements Serializable {
+    //private UID id;
     private final String sender, subject, body;
     private final List<String> receivers;
-    private final Calendar date;
+    private final Date date;
 
-    public Email(String sender, List<String> receivers, String subject, String body, Calendar date) {
+    public Email(String sender, List<String> receivers, String subject, String body, Date date) {
         this.sender = sender;
         this.receivers = new ArrayList<>(receivers);
         this.subject = subject;
         this.body = body;
         this.date = date;
     }
-    public Email(String sender, String receiver, String subject, String body, Calendar date) {
+    public Email(String sender, String receiver, String subject, String body, Date date) {
         this.sender = sender;
         this.receivers = new ArrayList<>();
         this.receivers.add(receiver);
@@ -27,9 +30,11 @@ public class Email {
         this.date = date;
     }
 
+    /*
     public int getId() {
         return id;
     }
+    */
 
     public String getSender() {
         return sender;
@@ -47,7 +52,7 @@ public class Email {
         return receivers;
     }
 
-    public Calendar getDate() {
+    public Date getDate() {
         return date;
     }
 }

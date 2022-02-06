@@ -1,5 +1,6 @@
 package org.prog3.email.server.tasks;
 
+import org.prog3.email.AppendingObjectOutputStream;
 import org.prog3.email.model.*;
 import org.prog3.email.server.Logger;
 
@@ -9,28 +10,28 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.concurrent.Callable;
 
-abstract class ServerTask implements Callable<Void> {
+public abstract class ServerTask implements Runnable {
     String account;
     Model model;
     Socket socket;
     ObjectInputStream in;
     ObjectOutputStream out;
 
-    public ServerTask(Socket socket) {
-        this.socket = socket;
-        openStreams();
+    public ServerTask(ObjectOutputStream out, ObjectInputStream in) {
+        this.out = out;
+        this.in = in;
     }
-    public ServerTask(String account, Model model, Socket socket) {
+    public ServerTask(String account, Model model, ObjectOutputStream out, ObjectInputStream in) {
         this.account = account;
         this.model = model;
-        this.socket = socket;
-        openStreams();
+        this.in = in;
+        this.out = out;
     }
 
     private void openStreams() {
         try {
-            this.in = new ObjectInputStream(socket.getInputStream());
-            this.out = new ObjectOutputStream(socket.getOutputStream());
+            out = new ObjectOutputStream(socket.getOutputStream());
+            in = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }

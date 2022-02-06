@@ -6,26 +6,27 @@ import org.prog3.email.server.tasks.*;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.FutureTask;
 import java.util.concurrent.Executors;
 import java.util.*;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class Server {
     private static Socket socket = null;
-    private static final int NUM_THREADS = 10, PORT = 1025;
-    private static ExecutorService executor = null;
-    private static Vector<FutureTask<Void>> tasks = null;
+    private static ServerSocket serverSocket;
+    private static final int NUM_THREADS = 10, PORT = 8888;
+    private static ThreadPoolExecutor executor = null;
+    private static Vector<ServerTask> tasks = null;
     private static Model model;
     private static boolean running = true;
 
     public static void listen(int port){
         try {
             Logger.log("Listening on port " + port);
-            ServerSocket serverSocket = new ServerSocket(port);
-            executor = Executors.newFixedThreadPool(NUM_THREADS);
+            serverSocket = new ServerSocket(port);
+            executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(NUM_THREADS);
             tasks = new Vector<>();
 
             while (running) {
@@ -37,7 +38,7 @@ public class Server {
             Logger.log(e.getMessage());
         } finally {
             Logger.log("Shutting down server...");
-            if (socket!=null)
+            if (socket!=null) {
                 try {
                     socket.close();
                     Logger.log("Socket closed");
@@ -45,6 +46,7 @@ public class Server {
                     e.printStackTrace();
                     Logger.log(e.getMessage());
                 }
+            }
         }
     }
 
@@ -52,31 +54,33 @@ public class Server {
         try {
             socket = serverSocket.accept();
             Logger.log(socket + " - Connection Established");
-            Object request = ((ObjectInputStream) socket.getInputStream()).readObject();
-            FutureTask<Void> ft = null;
+            // OOS has to be created before OIS to write its header
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+
+            Object request = in.readObject(); // wait for request
+
+            ServerTask task = null;
             if (request instanceof Request r){
+                Logger.log(socket + " - " + r.getType() + " ["+  r.getAccount()  +"]");
                 switch (r.getType()) {
                     case PullMessages ->
-                        ft = new FutureTask<>(
-                               new SendMessageList(r.getAccount(), model, socket));
+                        task = new SendMessageList(r.getAccount(), model, out, in);
 
                     case PushMessage ->
-                        ft = new FutureTask<>(
-                                new SendMessage(r.getAccount(), r.getEmail(), model, socket));
+                        task = new SendMessage(r.getAccount(), r.getEmail(), model, out, in);
 
                     case DeleteMessage ->
-                         ft = new FutureTask<>(
-                                 new DeleteMessage(r.getAccount(), r.getEmail(), model, socket));
+                         task = new DeleteMessage(r.getAccount(), r.getEmail(), model, out, in);
 
                 }
             } else {  // malformed request
                 Logger.log(socket + " - Bad Request");
-                ft = new FutureTask<>(
-                        new NotifyBadRequest(socket));
+                task = new NotifyBadRequest(out, in);
             }
-            assert ft != null;
-            tasks.add(ft);
-            executor.execute(ft);
+            assert task != null;
+            tasks.add(task);
+            executor.execute(task);
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             Logger.log(e.getMessage());
@@ -86,8 +90,7 @@ public class Server {
     public static void main(String[] args) {
 
         model = new Model();
-        if (args.length >= 0) // TODO debug flag
-            model.init();
+        //model.init();
 
         Logger.log("Server Started");
         SetupShutdown();
@@ -98,8 +101,15 @@ public class Server {
 
     static void SetupShutdown() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-               Logger.log("ShutDown Hook");
-               running = false;
+            Logger.log("ShutDown Hook");
+            try {
+                if (socket != null)
+                    socket.close();
+                if (serverSocket != null)
+                    serverSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }));
     }
 }

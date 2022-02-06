@@ -1,33 +1,37 @@
 package org.prog3.email.server.tasks;
 
+import org.prog3.email.AppendingObjectOutputStream;
 import org.prog3.email.model.*;
 import org.prog3.email.server.*;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
 public class SendMessageList extends ServerTask {
 
-    public SendMessageList(String account, Model model, Socket socket) {
-        super(account, model, socket);
+    public SendMessageList(String account, Model model, ObjectOutputStream out, ObjectInputStream in) {
+        super(account, model, out, in);
     }
 
     @Override
-    public Void call() {
+    public void run() {
         try {
             ArrayList<Email> emails = model.getEmails(account);
-            Logger.log(socket + " - Got email list (" + account + ")");
             out.writeObject("OK");
+            Logger.log(account + ": " + emails.size());
+            out.flush();
             for (Email email : emails) {
                 out.writeObject(email);
                 out.flush();
             }
             out.writeObject("End of stream");
+
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            closeStreams();
         }
-        Logger.log(socket + " - Sent email list(" + account + ")");
-        closeStreams();
-        return null;
     }
 }
