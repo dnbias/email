@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.stage.*?>
+
+<Stage height="700.0" minHeight="500.0" minWidth="700.0" width="1000.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+    <scene>
+        <Scene>
+            <AnchorPane prefHeight="577.0" prefWidth="679.0">
+            <children>
+               <SplitPane dividerPositions="0.2791728212703102" layoutX="240.0" layoutY="223.0" prefHeight="577.0" prefWidth="679.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                 <items>
+                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                        <children>
+                           <VBox layoutX="43.0" layoutY="141.0" prefHeight="575.0" prefWidth="186.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <children>
+                                 <HBox prefHeight="29.0" prefWidth="186.0">
+                                    <children>
+                                       <Separator layoutX="38.0" layoutY="10.0" minHeight="-Infinity" orientation="VERTICAL" prefHeight="17.0" prefWidth="8.0" />
+                                       <Label text="Label" />
+                                       <Separator minHeight="-Infinity" orientation="VERTICAL" prefHeight="0.0" prefWidth="91.0" />
+                                       <Label layoutX="10.0" layoutY="10.0" text="Label" />
+                                    </children>
+                                 </HBox>
+                                 <ListView prefHeight="606.0" prefWidth="186.0" />
+                              </children>
+                           </VBox>
+                        </children>
+                     </AnchorPane>
+                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                        <children>
+                           <BorderPane prefHeight="575.0" prefWidth="485.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <top>
+                                 <Pane prefHeight="32.0" prefWidth="485.0" BorderPane.alignment="CENTER" />
+                              </top>
+                              <left>
+                                 <Pane prefHeight="506.0" prefWidth="35.0" BorderPane.alignment="CENTER" />
+                              </left>
+                              <right>
+                                 <Pane prefHeight="506.0" prefWidth="24.0" BorderPane.alignment="CENTER" />
+                              </right>
+                              <bottom>
+                                 <Pane prefHeight="37.0" prefWidth="485.0" BorderPane.alignment="CENTER" />
+                              </bottom>
+                              <center>
+                                 <BorderPane BorderPane.alignment="TOP_LEFT">
+                                    <center>
+                                       <ListView prefHeight="523.0" prefWidth="426.0" />
+                                    </center>
+                                    <top>
+                                       <Pane prefHeight="6.0" prefWidth="426.0" BorderPane.alignment="CENTER" />
+                                    </top>
+                                    <right>
+                                       <Pane prefHeight="493.0" prefWidth="7.0" BorderPane.alignment="CENTER" />
+                                    </right>
+                                    <left>
+                                       <Pane prefHeight="493.0" prefWidth="7.0" BorderPane.alignment="CENTER" />
+                                    </left>
+                                    <bottom>
+                                       <Pane prefHeight="7.0" prefWidth="426.0" BorderPane.alignment="CENTER">
+                                          <effect>
+                                             <Shadow />
+                                          </effect>
+                                       </Pane>
+                                    </bottom>
+                                 </BorderPane>
+                              </center>
+                           </BorderPane>
+                        </children>
+                     </AnchorPane>
+                 </items>
+               </SplitPane>
+            </children></AnchorPane>
+        </Scene>
+    </scene>
+</Stage>
