@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.stage.*?>
+
+<Stage fx:id="stgNotification" alwaysOnTop="true" resizable="false" title="eMail Notification" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+    <scene>
+        <Scene stylesheets="@darkstyle.css">
+            <AnchorPane prefHeight="200" prefWidth="200">
+            <children>
+               <VBox alignment="CENTER" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <children>
+                     <Label fx:id="lblMessage" alignment="TOP_CENTER" prefHeight="147.0" prefWidth="177.0" text="NotificationNotificationNotificationNotificationNotificationNotificationNotificationNotificationNotificationNotification" wrapText="true">
+                        <font>
+                           <Font name="Candara" size="15.0" />
+                        </font>
+                     </Label>
+                     <HBox alignment="BOTTOM_CENTER" prefHeight="22.0" prefWidth="200.0">
+                        <children>
+                           <Pane prefWidth="25.0">
+                              <children>
+                                 <Button fx:id="btnOk" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onOkButtonClick" prefHeight="25.0" prefWidth="25.0">
+                                    <cursor>
+                                       <Cursor fx:constant="HAND" />
+                                    </cursor>
+                                    <effect>
+                                       <InnerShadow height="6.17" radius="4.0675" width="12.1" />
+                                    </effect>
+                                 </Button>
+                              </children>
+                           </Pane>
+                        </children>
+                     </HBox>
+                  </children>
+               </VBox>
+            </children></AnchorPane>
+        </Scene>
+    </scene>
+</Stage>

@@ -1,22 +1,38 @@
 .button {
--fx-background-radius: 10px;
--fx-content-display: graphics;
+-fx-background-radius: 5px;
 }
 #btnDelete {
 -fx-background-image: url('delete.png');
--fx-background-size: 30px;
+-fx-background-size: 40px;
 -fx-background-repeat: no-repeat;
 -fx-background-position: center;
 }
 #btnReply {
 -fx-background-image: url('reply.png');
--fx-background-size: 30px;
+-fx-background-size: 40px;
 -fx-background-repeat: no-repeat;
 -fx-background-position: center;
 }
 #btnForward {
 -fx-background-image: url('forward.png');
--fx-background-size: 30px;
+-fx-background-size: 40px;
 -fx-background-repeat: no-repeat;
 -fx-background-position: center;
 }
+#btnCompose{
+-fx-background-image: url('new.png');
+-fx-background-size: 40px;
+-fx-background-repeat: no-repeat;
+-fx-background-position: center;
+}
+#btnSend {
+-fx-background-image: url('send.png');
+-fx-background-size: 40px;
+-fx-background-repeat: no-repeat;
+-fx-background-position: center;
+}#btnOk {
+ -fx-background-image: url('ok.png');
+ -fx-background-size: 40px;
+ -fx-background-repeat: no-repeat;
+ -fx-background-position: center;
+ }

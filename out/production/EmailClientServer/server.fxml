@@ -29,7 +29,7 @@
                                        <Label alignment="CENTER_RIGHT" layoutX="10.0" layoutY="10.0" prefHeight="17.0" prefWidth="34.0" text="100" textAlignment="RIGHT" />
                                     </children>
                                  </HBox>
-                                 <ListView prefHeight="606.0" prefWidth="186.0" />
+                                 <ListView fx:id="listClients" prefHeight="606.0" prefWidth="186.0" />
                               </children>
                            </VBox>
                         </children>
@@ -52,7 +52,7 @@
                               <center>
                                  <BorderPane BorderPane.alignment="TOP_LEFT">
                                     <center>
-                                       <ListView prefHeight="523.0" prefWidth="426.0" />
+                                       <ListView fx:id="listLog" prefHeight="523.0" prefWidth="426.0" />
                                     </center>
                                     <top>
                                        <Pane prefHeight="6.0" prefWidth="426.0" BorderPane.alignment="CENTER" />
