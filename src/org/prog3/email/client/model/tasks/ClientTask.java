@@ -1,48 +1,43 @@
 package org.prog3.email.client.model.tasks;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.collections.ObservableList;
-import org.prog3.email.AppendingObjectOutputStream;
+import org.prog3.email.client.ui.ClientController;
 import org.prog3.email.model.*;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public abstract class ClientTask implements Runnable {
-    String account, host;
-    int port;
-    Socket socket;
-    ObjectInputStream in;
-    ObjectOutputStream out;
+    static ClientController controller;
+    final static Object lock = new Object();
+    static String account, host;
+    static int port;
+    static Socket socket;
+    static ObjectInputStream in;
+    static ObjectOutputStream out;
     ObservableList<Email> inbox;
+    static BooleanProperty ongoingConnection;
 
-    public ClientTask(String host, int port, String account) {
-        this.host = host;
-        this.port = port;
-        this.account = account;
+    public ClientTask() { }
+
+    public static void initialize(ClientController clientController, BooleanProperty connected, String currentAccount) {
+        controller = clientController;
+        ongoingConnection = connected;
+        account = currentAccount;
     }
 
-    protected void connectToServer(String host, int port) throws IOException {
-        System.out.println("Connecting on " + host + "::" + port);
-        socket = new Socket(host, port);
-        out = new ObjectOutputStream(socket.getOutputStream());
-        in = new ObjectInputStream(socket.getInputStream());
-
-        System.out.println("Connected");
+    public ClientTask(String host, int port) {
+        ClientTask.host = host;
+        ClientTask.port = port;
     }
 
-    protected void closeConnection() {
-        if (socket != null) {
-            try {
-                System.out.print("Disconnecting...");
-                in.close();
-                out.close();
-                socket.close();
-                System.out.println(" Ok");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    protected boolean checkConnection() {
+        if (!ongoingConnection.getValue()) {
+            System.out.println("No connection");
+            controller.notify("No Connection");
         }
+        return ongoingConnection.getValue();
     }
 }

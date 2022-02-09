@@ -10,25 +10,28 @@ import java.io.IOException;
 public class DeleteMessage extends ClientTask {
     Email email;
 
-    public DeleteMessage(String host, int port, String account, Email email, ObservableList<Email> inbox) {
-        super(host, port, account);
+    public DeleteMessage(String account, Email email, ObservableList<Email> inbox) {
+        DeleteMessage.account = account;
         this.email = email;
         this.inbox = inbox;
     }
 
     @Override
     public void run() {
-        try {
-            connectToServer(host, port);
-            Request request = new Request(RequestType.DeleteMessage, email);
-            out.writeObject(request);
-            out.flush();
+        if (!checkConnection()) {
+            return;
+        }
 
-            inbox.remove(email);
+        Request request = new Request(RequestType.DeleteMessage, email);
+        synchronized (lock) {
+            try {
+                out.writeObject(request);
+                out.flush();
 
-            closeConnection();
-        } catch (IOException e) {
-            e.printStackTrace();
+                inbox.remove(email);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
