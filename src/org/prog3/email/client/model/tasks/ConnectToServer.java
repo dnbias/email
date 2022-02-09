@@ -11,6 +11,9 @@ import java.net.Socket;
 
 public class ConnectToServer extends ClientTask {
 
+    /*
+     * Task to connect to server at host:port and identify as account
+     */
     public ConnectToServer(String host, int port, String account) {
         super(host, port);
         ConnectToServer.account = account;

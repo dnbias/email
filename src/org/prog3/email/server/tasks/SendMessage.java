@@ -9,6 +9,9 @@ import java.util.LinkedList;
 
 public class SendMessage extends ServerTask {
     Email email;
+    /*
+     * Task to send Email to Server
+     */
     public SendMessage (String account, Email email, ObjectOutputStream out, ObjectInputStream in) {
         super(account, out, in);
         this.email = email;

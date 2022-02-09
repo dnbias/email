@@ -10,6 +10,9 @@ import java.io.ObjectOutputStream;
 public class DeleteMessage extends ServerTask {
     Email email;
 
+    /*
+     * Task to delete Email from client's account
+     */
     public DeleteMessage(String account, Email email, ObjectOutputStream out, ObjectInputStream in) {
         super(account, out, in);
         this.email = email;

@@ -16,6 +16,9 @@ public class MakeEmail implements Callable<Email> {
     final Object lock;
     Path filename;
 
+    /*
+     * Task to convert from JSON to Email and return it
+     */
     public MakeEmail(Path filename, Object lock) {
         this.filename = filename;
         this.lock = lock;
@@ -24,7 +27,7 @@ public class MakeEmail implements Callable<Email> {
     @Override
     public Email call() {
         Email email = null;
-        synchronized (lock) {
+        synchronized (lock) { // synchronize in model's context
             try (Reader reader = new FileReader(filename.toString())) {
                 Gson gson = new GsonBuilder().create();
                 email = gson.fromJson(reader, Email.class);

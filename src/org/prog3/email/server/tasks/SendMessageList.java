@@ -9,6 +9,9 @@ import java.util.ArrayList;
 
 public class SendMessageList extends ServerTask {
 
+    /*
+     * Task to send Emails in account's inbox to client
+     */
     public SendMessageList(String account, ObjectOutputStream out, ObjectInputStream in) {
         super(account, out, in);
     }

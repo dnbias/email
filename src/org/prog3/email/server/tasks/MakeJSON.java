@@ -16,6 +16,9 @@ public class MakeJSON extends ServerTask {
     File emailsDir;
     final Object lock;
 
+    /*
+     * Task to convert from Email to JSON
+     */
     public MakeJSON(Email email, String account, File emailsDir, Object lock) {
         this.email = email;
         this.account = account;
@@ -30,7 +33,8 @@ public class MakeJSON extends ServerTask {
             long time = email.getDate().getTime();
             File accountDir = new File("." + s + emailsDir.getName() + s +  account);
             File emailFile = new File( accountDir + s + time + ".json");
-            synchronized (lock) {
+
+            synchronized (lock) { // synchronize in model's context
                 if (!accountDir.exists()) {
                     accountDir.mkdir();
                 }

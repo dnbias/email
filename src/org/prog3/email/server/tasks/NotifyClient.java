@@ -13,6 +13,9 @@ public class NotifyClient extends ServerTask {
         super(out, in);
     }
 
+    /*
+     * Task to notify client of a message
+     */
     public NotifyClient(ObjectOutputStream out, ObjectInputStream in, String message) {
         super(out, in);
         this.message = message;

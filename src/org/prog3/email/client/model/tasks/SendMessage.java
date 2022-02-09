@@ -8,8 +8,12 @@ import java.io.IOException;
 
 public class SendMessage extends ClientTask {
     Email email;
+
+    /*
+     * Task to send Email
+     */
     public SendMessage (String account, Email email) {
-        this.account = account;
+        SendMessage.account = account;
         this.email = email;
     }
 
