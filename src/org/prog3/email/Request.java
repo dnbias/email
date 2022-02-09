@@ -6,13 +6,18 @@ import java.io.Serializable;
 
 public class Request implements Serializable {
     private final RequestType type;
-    private final String account;
+    private String account;
     private Email email = null;
+
+    public Request(RequestType type) {
+        this.type = type;
+    }
 
     public Request(RequestType type, String account) {
         this.type = type;
         this.account = account;
     }
+
     public Request(RequestType type, Email email) {
         this.type = type;
         this.account = email.getSender();

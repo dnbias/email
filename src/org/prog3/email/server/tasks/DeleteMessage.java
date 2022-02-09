@@ -10,8 +10,8 @@ import java.io.ObjectOutputStream;
 public class DeleteMessage extends ServerTask {
     Email email;
 
-    public DeleteMessage(String account, Email email, Model model, ObjectOutputStream out, ObjectInputStream in) {
-        super(account, model, out, in);
+    public DeleteMessage(String account, Email email, ObjectOutputStream out, ObjectInputStream in) {
+        super(account, out, in);
         this.email = email;
     }
 
@@ -19,11 +19,12 @@ public class DeleteMessage extends ServerTask {
     public void run() {
         try {
             String message = model.deleteEmail(email) ? "OK" : "ERROR";
-            out.writeObject(message);
-            out.flush();
+            synchronized (out) {
+                out.writeObject(message);
+                out.flush();
+            }
             Logger.log("Deleted email: " +
                     account + "/" + email.getSender() + "/" + email.getDate().getTime() + ".json");
-            closeStreams();
         } catch (IOException e) {
             e.printStackTrace();
         }

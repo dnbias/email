@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
-import java.util.concurrent.FutureTask;
 
 public class MakeEmail implements Callable<Email> {
     final Object lock;

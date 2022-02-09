@@ -3,11 +3,12 @@ package org.prog3.email.server;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
 import org.prog3.email.Request;
+import org.prog3.email.RequestType;
 import org.prog3.email.model.*;
 import org.prog3.email.server.ui.*;
 import org.prog3.email.server.tasks.*;
@@ -18,6 +19,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.URL;
 import java.util.concurrent.Executors;
 import java.util.*;
@@ -31,16 +33,17 @@ public class Server extends Application {
     private static Vector<ServerTask> tasks = null;
     private static Model model;
     private static ServerController controller;
-    private static boolean running = true;
 
     public Server() {
         model = new Model();
         controller = new ServerController();
+        ServerTask.initialize(model);
     }
+
 
     @Override
     public void start(Stage stage) throws Exception {
-
+        Platform.setImplicitExit(true); // really close
         Logger.log("Server Started");
         SetupShutdown();
 
@@ -50,22 +53,31 @@ public class Server extends Application {
 
         FXMLLoader loader = new FXMLLoader(url);
         loader.setController(controller);
-        stage.setTitle("Email Client");
+        stage.setTitle("Email Server");
         stage = loader.load();
         stage.setHeight(800);
-        stage.setWidth(1000);
+        stage.setWidth(550);
+        stage.getIcons().add(
+                new Image(Server.class.getResourceAsStream("/server.png")));
         //stage.initStyle(StageStyle.UNDECORATED);
 
+
+        // sleek dark style for FXML
         JMetro jMetro = new JMetro(Style.DARK);
         jMetro.setScene(stage.getScene());
 
+        controller.initialize(model);
         stage.show();
+        stage.setOnCloseRequest(e -> System.exit(0)); // actually close
+        new Thread( () -> listen(PORT) ).start(); // start main loop
 
-        new Thread( () -> listen(PORT)).start();
-
-        Logger.log("Server Initialized\n");
+        Logger.log("Server Initialized");
     }
 
+    /*
+     * Main Loop of the server
+     * @param int port of the connection
+     */
     public static void listen(int port){
         try {
             Logger.log("Listening on port " + port);
@@ -73,8 +85,9 @@ public class Server extends Application {
             executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(NUM_THREADS);
             tasks = new Vector<>();
 
-            while (running) {
-                serve(serverSocket);
+            while (true) { // main loop
+                socket = serverSocket.accept();
+                executor.execute(() -> serve(socket));
             }
 
         } catch (IOException e) {
@@ -94,45 +107,83 @@ public class Server extends Application {
         }
     }
 
-    private static void serve(ServerSocket serverSocket){
+    // Serve the newly connected client on the socket
+    private static void serve(Socket socket){
+        Logger.log(socket,"Connection Established");
+
         try {
-            socket = serverSocket.accept();
-            Logger.log(socket + " - Connection Established");
             // OOS has to be created before OIS to write its header
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 
-            Object request = in.readObject(); // wait for request
+            waitForIdentification(out, in);
+            waitForRequest(out,in);
 
-            ServerTask task = null;
-            if (request instanceof Request r){
-                Logger.log(socket + " - " + r.getType() + " ["+  r.getAccount()  +"]");
-                switch (r.getType()) {
-                    case PullMessages ->
-                        task = new SendMessageList(r.getAccount(), model, out, in);
-
-                    case PushMessage ->
-                        task = new SendMessage(r.getAccount(), r.getEmail(), model, out, in);
-
-                    case DeleteMessage ->
-                         task = new DeleteMessage(r.getAccount(), r.getEmail(), model, out, in);
-
-                }
-            } else {  // malformed request
-                Logger.log(socket + " - Bad Request");
-                task = new NotifyBadRequest(out, in);
-            }
-            assert task != null;
-            tasks.add(task);
-            executor.execute(task);
+        } catch (SocketException s) {
+            Logger.log(socket, "Disconnected");
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             Logger.log(e.getMessage());
         }
     }
 
+    // First thing for a new socket, identify the account
+    private static void waitForIdentification(ObjectOutputStream out, ObjectInputStream in)
+            throws ClassNotFoundException, IOException {
+        boolean identified = false;
+        while (!identified) {
+            Object request = in.readObject(); // wait for request
+
+            ServerTask task;
+            if (request instanceof Request r && r.getType() == RequestType.Identification) {
+                Logger.log(socket, r.getType() + " [" + r.getAccount() + "]");
+                task = new IdentifyConnection(out, in, r.getAccount());
+                identified = true;
+            } else {  // malformed request
+                Logger.log(socket, "Bad Request");
+                task = new NotifyClient(out, in, "Error: ID Connection");
+            }
+            tasks.add(task);
+            executor.execute(task); // serve request
+        }
+    }
+
+    // After the verification of the account, wait for the requests and serve them
+    private static void waitForRequest(ObjectOutputStream out, ObjectInputStream in)
+            throws ClassNotFoundException, IOException {
+        boolean openConnection = true;
+
+        while (openConnection) {
+            Object request = in.readObject(); // wait for request
+
+            ServerTask task = null;
+            if (request instanceof Request r) {
+                Logger.log(socket, r.getType() + " [" + r.getAccount() + "]");
+                switch (r.getType()) {
+                    case PullMessages -> task = new SendMessageList(r.getAccount(), out, in);
+
+                    case PushMessage -> task = new SendMessage(r.getAccount(), r.getEmail(), out, in);
+
+                    case DeleteMessage -> task = new DeleteMessage(r.getAccount(), r.getEmail(), out, in);
+
+                    case CloseConnection -> {
+                        task = new CloseConnection(socket, r.getAccount(), out, in);
+                        openConnection = false;
+                    }
+                }
+            } else {  // malformed request
+                Logger.log(socket, "Bad Request");
+                task = new NotifyClient(out, in);
+            }
+            assert task != null;
+            tasks.add(task);
+            executor.execute(task); // serve request
+        }
+    }
+
     public static void main(String[] args) { launch(args); }
 
+    // Shutdown hook for closing the sockets if any are still open
     static void SetupShutdown() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             Logger.log("ShutDown Hook");

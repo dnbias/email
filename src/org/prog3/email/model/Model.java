@@ -1,5 +1,11 @@
 package org.prog3.email.model;
 
+import javafx.application.Platform;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import org.prog3.email.server.tasks.MakeEmail;
 import org.prog3.email.server.tasks.MakeJSON;
 import org.prog3.email.server.tasks.ServerTask;
@@ -12,9 +18,13 @@ import java.util.*;
 import java.util.concurrent.*;
 
 public class Model {
-    File emailsDir = null;
+    File emailsDir;
     private static ThreadPoolExecutor executorImporting, executorExporting;
     public static int NUM_THREADS = 4;
+    private static ObservableList<String> logContent, connectedClients;
+    private static Map<String, ObjectOutputStream> connectedClientsMap;
+    private static SimpleListProperty<String> log;
+    private static SimpleListProperty<String> clients;
 
     public Model() {
         emailsDir = new File("Emails");
@@ -23,8 +33,50 @@ public class Model {
         }
         executorImporting = (ThreadPoolExecutor) Executors.newFixedThreadPool(NUM_THREADS/2);
         executorExporting = (ThreadPoolExecutor) Executors.newFixedThreadPool(NUM_THREADS/2);
+
+        logContent = FXCollections.observableList(new ArrayList<>());
+        Logger.setOutputList(logContent);
+        log = new SimpleListProperty<>();
+        log.set(logContent);
+
+        connectedClientsMap = new HashMap<>();
+        connectedClients = FXCollections.observableList(new ArrayList<>());
+        clients = new SimpleListProperty<>();
+        clients.set(connectedClients);
+        Logger.log("Model Initialized");
     }
 
+    /*
+     * Add account to connected list
+     */
+    public void addClient(String account, ObjectOutputStream out) {
+        Platform.runLater(() -> connectedClientsMap.put(account, out));
+        connectedClients.add(account);
+    }
+
+    /*
+     * Remove account from connected list
+     */
+    public void removeClient(String account){
+        connectedClientsMap.remove(account);
+        connectedClients.remove(account);
+    }
+
+    public LinkedList<ObjectOutputStream> getConnectedOutputStreams(List<String> accounts) {
+        LinkedList<ObjectOutputStream> r = new LinkedList<>();
+
+        for (String account : accounts) {
+            if (connectedClientsMap.containsKey(account)) {
+                r.add(connectedClientsMap.get(account));
+            }
+        }
+
+        return  r;
+    }
+
+    /*
+     * Add account to the database
+     */
     public void addAccount(String account) {
         String path = "." + File.separator + emailsDir.getName() + File.separator + account;
         File fileAccount = new File(path);
@@ -33,6 +85,9 @@ public class Model {
         }
     }
 
+    /*
+     * Add email to database
+     */
     public void addEmail(Email email) {
         makeJSON(email, email.getSender());
         for (String receiver : email.getReceivers()) {
@@ -40,6 +95,9 @@ public class Model {
         }
     }
 
+    /*
+     * Remove email from database
+     */
     public synchronized boolean deleteEmail(Email email) {
         boolean r = false;
         long time = email.getDate().getTime();
@@ -55,6 +113,9 @@ public class Model {
         return r;
     }
 
+    /*
+     * Fetch emails in account's inbox
+     */
     public ArrayList<Email> getEmails(String account){
         String path = "." + File.separator + emailsDir + File.separator + account;
         File accountDir = new File(path);
@@ -73,7 +134,10 @@ public class Model {
                 makeEmail(f, tasks);
             }
             for (FutureTask<Email> currentTask : tasks) { // Wait for the threads to finish
-                currentTask.get();
+                Email currentResult = currentTask.get();
+                if (currentResult != null) {
+                    emails.add(currentResult);
+                }
             }
         } catch (InterruptedException | ExecutionException | IOException e) {
             Logger.log(e.getMessage());
@@ -83,6 +147,15 @@ public class Model {
         return emails;
     }
 
+    public ListProperty<String> clientsProperty() {
+        return clients;
+    }
+
+    public ListProperty<String> logProperty() {
+        return log;
+    }
+
+    // Go from Json to Email
     private void makeEmail(Path filename, Collection<FutureTask<Email>> tasks) {
         MakeEmail task = new MakeEmail(filename, this);
         FutureTask<Email> future = new FutureTask<>(task);
@@ -90,12 +163,14 @@ public class Model {
         tasks.add(future);
     }
 
+    // Go from Email to Json
     private void makeJSON(Email email, String account) {
         ServerTask task = new MakeJSON(email, account, emailsDir,this);
         executorExporting.execute(task);
     }
 
-    public void init() {
+    // Used for initial database population or debugging
+    public void initDebug() {
         addAccount("account@unito.it");
         addAccount("account1@unito.it");
         addAccount("account2@unito.it");

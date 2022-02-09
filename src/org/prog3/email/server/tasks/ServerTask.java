@@ -1,17 +1,14 @@
 package org.prog3.email.server.tasks;
 
 import org.prog3.email.model.*;
-import org.prog3.email.server.Server;
-import org.util.logger.*;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public abstract class ServerTask implements Runnable {
     String account;
-    Model model;
+    static Model model;
     Socket socket;
     ObjectInputStream in;
     ObjectOutputStream out;
@@ -22,31 +19,15 @@ public abstract class ServerTask implements Runnable {
         this.out = out;
         this.in = in;
     }
-    public ServerTask(String account, Model model, ObjectOutputStream out, ObjectInputStream in) {
+    public ServerTask(String account, ObjectOutputStream out, ObjectInputStream in) {
         this.account = account;
-        this.model = model;
         this.in = in;
         this.out = out;
     }
 
-    private void openStreams() {
-        try {
-            out = new ObjectOutputStream(socket.getOutputStream());
-            in = new ObjectInputStream(socket.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void initialize(Model serverModel) {
+        model = serverModel;
     }
 
-    protected void closeStreams() {
-        try {
-            if (in != null)
-                in.close();
-            if (out != null)
-                out.close();
-        } catch (IOException e) {
-            Logger.log(e.getMessage());
-        }
-    }
 }
 
