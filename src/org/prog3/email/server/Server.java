@@ -152,17 +152,33 @@ public class Server extends Application {
     private static void waitForRequest(ObjectOutputStream out, ObjectInputStream in)
             throws ClassNotFoundException, IOException {
         boolean openConnection = true;
+        LinkedList<NotifyClient> notifications = new LinkedList<>(); // tasks to notify connected clients
 
         while (openConnection) {
             Object request = in.readObject(); // wait for request
 
             ServerTask task = null;
+            if (notifications.size() > 0) {
+                notifications.clear();
+            }
+
             if (request instanceof Request r) {
                 Logger.log(socket, r.getType() + " [" + r.getAccount() + "]");
                 switch (r.getType()) {
                     case PullMessages -> task = new SendMessageList(r.getAccount(), out, in);
 
-                    case PushMessage -> task = new SendMessage(r.getAccount(), r.getEmail(), out, in);
+                    case PushMessage -> {
+                        task = new SendMessage(r.getAccount(), r.getEmail(), out, in);
+
+                        LinkedList<ObjectOutputStream> connectedReceivers =
+                                model.getConnectedOutputStreams(r.getEmail().getReceivers());
+                        if (connectedReceivers.size() > 0) { //
+                            for (int i = 0; i < connectedReceivers.size(); i++) {
+                                notifications.add(
+                                        new NotifyClient(out,in,"Message Received from " + r.getAccount()));
+                            }
+                        }
+                    }
 
                     case DeleteMessage -> task = new DeleteMessage(r.getAccount(), r.getEmail(), out, in);
 
@@ -176,8 +192,12 @@ public class Server extends Application {
                 task = new NotifyClient(out, in);
             }
             assert task != null;
+
             tasks.add(task);
             executor.execute(task); // serve request
+            for (NotifyClient notification : notifications) {
+                executor.execute(notification);
+            }
         }
     }
 
