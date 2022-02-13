@@ -1,0 +1,1 @@
+java -jar -ea --add-opens javafx.controls/javafx.scene.control=ALL-UNNAMED --module-path "C:\Program Files\Java\javafx-sdk-17.0.2\lib" --add-modules javafx.base,javafx.controls,javafx.graphics,javafx.fxml ../EmailClientServer.jar
