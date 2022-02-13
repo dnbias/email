@@ -1,8 +1,8 @@
 package org.prog3.email.client.model.tasks;
 
 import javafx.collections.ObservableList;
-import org.prog3.email.Request;
-import org.prog3.email.RequestType;
+import org.prog3.email.model.Request;
+import org.prog3.email.model.RequestType;
 import org.prog3.email.model.Email;
 
 import java.io.IOException;
@@ -22,7 +22,7 @@ public class DeleteMessage extends ClientTask {
             return;
         }
 
-        Request request = new Request(RequestType.DeleteMessage, email);
+        Request request = new Request(RequestType.DeleteMessage, account, email);
         synchronized (lock) {
             try {
                 out.writeObject(request);

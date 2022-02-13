@@ -30,9 +30,8 @@ public class MakeJSON extends ServerTask {
     public void run() {
         try {
             String s = File.separator;
-            long time = email.getDate().getTime();
             File accountDir = new File("." + s + emailsDir.getName() + s +  account);
-            File emailFile = new File( accountDir + s + time + ".json");
+            File emailFile = new File( accountDir + s + email.getId() + ".json");
 
             synchronized (lock) { // synchronize in model's context
                 if (!accountDir.exists()) {

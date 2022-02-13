@@ -1,38 +1,58 @@
-.button {
--fx-background-radius: 5px;
+.button{
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-radius: 0;
+    -fx-background-color: transparent;
+    -fx-font-family:"Segoe UI", Helvetica, Arial, sans-serif;
+    -fx-font-size: 1em; /* 12 */
+    -fx-text-fill: #828282;
+}
 }
 #btnDelete {
 -fx-background-image: url('delete.png');
--fx-background-size: 40px;
+-fx-background-size: 20px;
 -fx-background-repeat: no-repeat;
 -fx-background-position: center;
 }
 #btnReply {
 -fx-background-image: url('reply.png');
--fx-background-size: 40px;
+-fx-background-size: 20px;
 -fx-background-repeat: no-repeat;
 -fx-background-position: center;
 }
 #btnForward {
 -fx-background-image: url('forward.png');
--fx-background-size: 40px;
+-fx-background-size: 20px;
 -fx-background-repeat: no-repeat;
 -fx-background-position: center;
 }
 #btnCompose{
 -fx-background-image: url('new.png');
--fx-background-size: 40px;
+-fx-background-size: 30px;
 -fx-background-repeat: no-repeat;
 -fx-background-position: center;
 }
 #btnSend {
 -fx-background-image: url('send.png');
--fx-background-size: 40px;
+-fx-background-size: 30px;
 -fx-background-repeat: no-repeat;
 -fx-background-position: center;
-}#btnOk {
+}
+#btnOk {
  -fx-background-image: url('ok.png');
- -fx-background-size: 40px;
+ -fx-background-size: 25px;
  -fx-background-repeat: no-repeat;
  -fx-background-position: center;
- }
+}
+#btnConfirm {
+-fx-background-image: url('ok.png');
+-fx-background-size: 25px;
+-fx-background-repeat: no-repeat;
+-fx-background-position: center;
+}
+#btnConnection {
+-fx-background-image: url('disconnected.png');
+-fx-background-size: 20px;
+-fx-background-repeat: no-repeat;
+-fx-background-position: center;
+}

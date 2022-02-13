@@ -1,14 +1,9 @@
 package org.prog3.email.client.ui;
 
 import javafx.application.Platform;
-import javafx.beans.Observable;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableBooleanValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -30,7 +25,7 @@ import org.prog3.email.client.model.*;
 
 public class ClientController {
     @FXML
-    TextField lblFrom, lblTo, lblSubject, lblDate;
+    TextField lblFrom, lblTo, lblSubject, lblDate, fieldAccount;
 
     @FXML
     ChoiceBox<String> boxAccount;
@@ -48,7 +43,7 @@ public class ClientController {
     TableColumn<Email, String> tableColFrom, tableColSubject, tableColDate;
 
     @FXML
-    Button btnCompose, btnReply, btnDelete, btnForward, btnSend;
+    Button btnCompose, btnReply, btnDelete, btnForward, btnSend, btnConfirm, btnConnection;
 
     SimpleBooleanProperty connected, composing;
 
@@ -56,8 +51,9 @@ public class ClientController {
     private Email selectedEmail;
     private Email emptyEmail;
 
-    private Stage notification;
+    private Stage notification, promptForAccount;
     NotificationController notificationController;
+
 
     public ClientController(PrintStream out) {
         System.setOut(out);
@@ -74,34 +70,26 @@ public class ClientController {
 
         client = model;
 
+        emptyEmail = new Email(
+                boxAccount.getValue(), "", "", "", Calendar.getInstance().getTime());
         notificationController = new NotificationController();
         setUpNotification(); // notification controller
+
+        setUpPrompt();
 
         selectedEmail = null; // empty email editor
 
         // setup properties and listeners
         tableEmails.setItems(model.inboxProperty());
         tableEmails.setOnMouseClicked(this::showSelectedEmail);
+        tableEmails.getSortOrder().add(tableColDate);
+        tableEmails.sort();
         setTableCellFactories();
-
-        boxAccount.itemsProperty().bind(model.accountProperty());
-        boxAccount.setValue(model.accountProperty().get(0));
-        emptyEmail = new Email(boxAccount.getValue(), "", "", "", Calendar.getInstance().getTime());
-
-        connected = new SimpleBooleanProperty();
-        connected.bind(model.connectedProperty());
-        ChangeListener<Boolean> connectionListener =
-                (observableValue, booleanProperty, t1) -> changeStatus(observableValue.getValue());
-        connected.addListener(connectionListener);
-
-        composing = new SimpleBooleanProperty();
-        composing.set(false);
-        composing.bind(btnSend.disableProperty());
 
         // show the emptyEmail
         updateDetailView(emptyEmail, false);
 
-        client.establishConnection();
+        client.checkConfiguration();
     }
 
     /*
@@ -110,6 +98,31 @@ public class ClientController {
     public void notify(String message) {
         notificationController.setNotification(message);
         Platform.runLater( () -> notification.show() );
+    }
+
+    public void promptForAccount() {
+        Platform.runLater( () -> promptForAccount.show() );
+    }
+
+    public void refreshInterface() {
+        boxAccount.itemsProperty().bind(client.accountProperty());
+        boxAccount.setValue(client.accountProperty().get(
+                Configuration.instance.getCurrentAccount()));
+
+
+        connected = new SimpleBooleanProperty();
+        connected.bind(client.connectedProperty());
+        ChangeListener<Boolean> connectionListener =
+                (observableValue, booleanProperty, t1) -> changeStatus(observableValue.getValue());
+        connected.addListener(connectionListener);
+
+        composing = new SimpleBooleanProperty();
+        composing.set(false);
+        composing.bind(btnSend.disableProperty());
+    }
+
+    public void reorderTable() {
+        tableEmails.sort();
     }
 
     // set up the notification controller
@@ -123,7 +136,7 @@ public class ClientController {
         loader.setController(notificationController);
 
         notification = new Stage();
-        notification.setTitle("eMail Notification");
+        notification.setTitle(boxAccount.getValue());
         try {
             notification = loader.load();
         } catch (IOException e) {
@@ -131,12 +144,41 @@ public class ClientController {
         }
         notification.setHeight(200);
         notification.setWidth(300);
-        notification.getIcons().add(new Image(Client.class.getResourceAsStream("/email.png")));
+        notification.getIcons().add(
+                new Image(Client.class.getResourceAsStream("/email.png")));
         notification.setAlwaysOnTop(true);
         notification.initStyle(StageStyle.UNDECORATED);
 
         JMetro jMetro = new JMetro(Style.LIGHT);
         jMetro.setScene(notification.getScene());
+    }
+
+    // Set up the account prompt (at startup with no configuration)
+    private void setUpPrompt() {
+        URL url = getClass().getResource("/prompt.fxml");
+
+        assert url != null;
+
+        FXMLLoader loader = new FXMLLoader(url);
+
+        loader.setController(new PromptController());
+
+        promptForAccount = new Stage();
+        promptForAccount.setTitle("Prompt");
+        try {
+            promptForAccount = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        promptForAccount.setHeight(200);
+        promptForAccount.setWidth(300);
+        promptForAccount.getIcons().add(
+                new Image(Client.class.getResourceAsStream("/email.png")));
+        promptForAccount.setAlwaysOnTop(true);
+        promptForAccount.initStyle(StageStyle.UNDECORATED);
+
+        JMetro jMetro = new JMetro(Style.LIGHT);
+        jMetro.setScene(promptForAccount.getScene());
     }
 
     // Set up the values for the Inbox
@@ -160,10 +202,9 @@ public class ClientController {
         Email selected = tableEmails.getSelectionModel().getSelectedItem();
         if (selected != null) {
             Email newEmail =
-                    new Email(boxAccount.getValue(), selected.getReceivers(),
-                            selected.getSubject(), "", Calendar.getInstance().getTime());
+                    new Email(boxAccount.getValue(), selected.getSender(),
+                            "Reply: "+selected.getSubject(), "", Calendar.getInstance().getTime());
             updateDetailView(newEmail, true);
-            composing.set(true);
         }
     }
 
@@ -172,25 +213,30 @@ public class ClientController {
         Email selected = tableEmails.getSelectionModel().getSelectedItem();
         if (selected != null) {
             Email newEmail =
-                    new Email(boxAccount.getValue(), selected.getReceivers(),
+                    new Email(boxAccount.getValue(), "",
                             "fwd: " + selected.getSubject(),
                             selected.getBody(), Calendar.getInstance().getTime());
             updateDetailView(newEmail, true);
-            composing.set(true);
         }
     }
 
     @FXML
     void onComposeButtonClick() {
+        emptyEmail = new Email(
+                boxAccount.getValue(), "", "", "", Calendar.getInstance().getTime());
         selectedEmail = emptyEmail;
         updateDetailView(selectedEmail, true);
-        composing.set(true);
     }
 
     @FXML
     void onSendButtonClick() {
         client.sendEmail(getDetailViewEmail());
+        selectedEmail = emptyEmail;
+        updateDetailView(selectedEmail, false);
     }
+
+    @FXML
+    void onConnectionClick() { client.establishConnection(); }
 
     protected void showSelectedEmail(MouseEvent mouseEvent) {
         Email email = tableEmails.getSelectionModel().getSelectedItem();
@@ -198,6 +244,7 @@ public class ClientController {
         selectedEmail = email;
         updateDetailView(email, false);
     }
+
 
     // Shows the email in the editor and make it editable or not
     protected void updateDetailView(Email email, boolean editable) {
@@ -215,6 +262,8 @@ public class ClientController {
             lblTo.setEditable(editable);
             lblSubject.setEditable(editable);
             txtBody.setEditable(editable);
+
+            selectedEmail = email;
         }
     }
 
@@ -266,7 +315,10 @@ public class ClientController {
     // listener for the connection state
     protected void changeStatus(Boolean connected) {
         if (connected) {
+            btnConnection.setStyle("-fx-background-image: url('connected.png')");
             client.pullEmails();
+        } else {
+            btnConnection.setStyle("-fx-background-image: url('disconnected.png')");
         }
     }
 

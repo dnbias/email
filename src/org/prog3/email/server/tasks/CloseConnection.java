@@ -18,7 +18,6 @@ public class CloseConnection extends ServerTask {
 
     @Override
     public void run() {
-        Logger.log(socket, "Closed Connection Successfully");
         model.removeClient(account);
         try {
             synchronized (out) {
@@ -30,5 +29,6 @@ public class CloseConnection extends ServerTask {
             Logger.log(e.getMessage());
             e.printStackTrace();
         }
+        Logger.log(socket, "Closed Connection Successfully");
     }
 }

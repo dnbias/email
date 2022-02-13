@@ -1,8 +1,8 @@
 package org.prog3.email.client.model.tasks;
 
 import javafx.collections.ObservableList;
-import org.prog3.email.Request;
-import org.prog3.email.RequestType;
+import org.prog3.email.model.Request;
+import org.prog3.email.model.RequestType;
 import org.prog3.email.model.Email;
 
 import java.io.EOFException;
@@ -17,7 +17,7 @@ public class PullMessageList extends ClientTask {
 
     @Override
     public void run() {
-        if (!checkConnection()) {
+        if (!ongoingConnection.getValue()) {
             return;
         }
 
@@ -38,7 +38,7 @@ public class PullMessageList extends ClientTask {
                     return;
                 }
 
-                inbox.removeAll();
+                inbox.clear();
                 System.out.println("Read input");
                 input = in.readObject();
 
@@ -53,9 +53,12 @@ public class PullMessageList extends ClientTask {
                     if (m.equals("End of stream")) {
                         System.out.println("MailInbox stream finished: " + m);
                     } else {
-                        System.out.println("Error during MailInbox stream");
+                        System.out.println("Error during MailInbox stream: " + m);
                     }
                 }
+
+                controller.reorderTable();
+
             } catch (EOFException eof) {
                 System.out.println("MailInbox stream finished");
             } catch (IOException | ClassNotFoundException e) {

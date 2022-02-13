@@ -10,6 +10,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="gson-2.2.21" level="project" />
     <orderEntry type="library" exported="" name="javafx17" level="application" />
-    <orderEntry type="library" name="jmetro-11.6.15" level="application" />
+    <orderEntry type="library" exported="" name="jmetro-11.6.15" level="application" />
   </component>
 </module>

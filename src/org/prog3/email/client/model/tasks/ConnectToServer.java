@@ -1,7 +1,7 @@
 package org.prog3.email.client.model.tasks;
 
-import org.prog3.email.Request;
-import org.prog3.email.RequestType;
+import org.prog3.email.model.Request;
+import org.prog3.email.model.RequestType;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -32,10 +32,12 @@ public class ConnectToServer extends ClientTask {
             } catch (ConnectException e) {
                 System.out.println("Connection Refused");
                 controller.notify("Connection Refused");
+                client.setConnected(false);
                 return;
             }
-
+            client.setConnected(true);
             System.out.println("Connected");
+
 
             Request request = new Request(RequestType.Identification, account);
 
@@ -58,6 +60,7 @@ public class ConnectToServer extends ClientTask {
                 }
             }
             ongoingConnection.set(true);
+            client.checkConnection();
 
         } catch (IOException | ClassNotFoundException e){
             e.printStackTrace();

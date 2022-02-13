@@ -1,6 +1,4 @@
-package org.prog3.email;
-
-import org.prog3.email.model.*;
+package org.prog3.email.model;
 
 import java.io.Serializable;
 
@@ -21,6 +19,14 @@ public class Request implements Serializable {
     public Request(RequestType type, Email email) {
         this.type = type;
         this.account = email.getSender();
+        if (type != RequestType.PullMessages) {
+            this.email = email;
+        }
+    }
+
+    public Request(RequestType type, String account, Email email) {
+        this.type = type;
+        this.account = account;
         if (type != RequestType.PullMessages) {
             this.email = email;
         }

@@ -1,4 +1,4 @@
-package org.prog3.email;
+package org.util;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;

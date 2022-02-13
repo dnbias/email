@@ -9,28 +9,28 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
+
 import org.prog3.email.model.Email;
 import org.prog3.email.client.ui.*;
 import org.prog3.email.client.model.tasks.*;
 
+import java.nio.file.*;
 import java.net.URL;
-import java.util.LinkedList;
-import java.util.UUID;
+import java.util.ArrayList;
 import java.util.Vector;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.*;
 
 public class Client extends Application {
 
     ClientController controller;
-    String host, id = UUID.randomUUID().toString();
+    String host;
     int port, currentAccount = 0;
 
     private static final int NUM_THREADS = 5;
     private static ThreadPoolExecutor executor = null;
+    private static ScheduledExecutorService scheduledExecutor = null;
     private static Vector<ClientTask> tasks = null;
 
     SimpleListProperty<Email> inbox;
@@ -41,19 +41,20 @@ public class Client extends Application {
     boolean connectedValue = false;
 
     public Client() {
-        accountsContent = FXCollections.observableList(new LinkedList<>());
-        accountsContent.add("account@unito.it"); // default DEBUG account
+        accountsContent = FXCollections.observableArrayList(new ArrayList<>());
+        //accountsContent.add("account@unito.it"); // default DEBUG account
         accounts = new SimpleListProperty<>();
         accounts.set(accountsContent);
         host = "localhost";
         port = 8888;
-        inboxContent = FXCollections.observableList(new LinkedList<>());
+        inboxContent = FXCollections.observableList(new ArrayList<>());
         inbox = new SimpleListProperty<>();
         inbox.set(inboxContent);
         connected = new SimpleBooleanProperty();
         connected.set(connectedValue);
         controller = new ClientController(System.out);
-        ClientTask.initialize(controller, connected, accountsContent.get(currentAccount));
+        //ClientTask.initialize(controller, connected, accountsContent.get(currentAccount));
+        ClientTask.initialize(this, controller, connected);
     }
 
     /*
@@ -73,6 +74,7 @@ public class Client extends Application {
     public void start(Stage stage) throws Exception {
         Platform.setImplicitExit(true);
         executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(NUM_THREADS);
+        scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
         tasks = new Vector<>();
         SetupShutdown();
 
@@ -86,7 +88,8 @@ public class Client extends Application {
         stage = loader.load();
         stage.setHeight(800);
         stage.setWidth(1000);
-        stage.getIcons().add(new Image(Client.class.getResourceAsStream("/email.png")));
+        stage.getIcons().add(
+                new Image(Client.class.getResourceAsStream("/email.png")));
 
         JMetro jMetro = new JMetro(Style.DARK);
         jMetro.setScene(stage.getScene());
@@ -108,14 +111,32 @@ public class Client extends Application {
 
     public BooleanProperty connectedProperty() { return connected; }
 
+    public void setConnected(boolean b) {
+        connectedValue = b;
+    }
+
     /*
      * Connect to the server, identify and pull emails if successful
      */
     public void establishConnection() {
-        System.out.println("Connecting to server");
-        ClientTask task = new ConnectToServer(host, port, accountsContent.get(currentAccount));
-        tasks.add(task);
-        executor.execute(task);
+        if (!connectedValue) {
+            System.out.println("Connecting to server...");
+            ClientTask task = new ConnectToServer(host, port, accountsContent.get(currentAccount));
+            tasks.add(task);
+            executor.execute(task);
+        } else {
+            controller.notify("Connected");
+        }
+    }
+
+    /*
+     * Pull email in the inbox
+     */
+    public void checkConnection() {
+        System.out.print("Start Connection Check Routine...");
+        Runnable task = new CheckConnection();
+        scheduledExecutor.scheduleWithFixedDelay(task,10,5, TimeUnit.SECONDS);
+        System.out.println("OK");
     }
 
     /*
@@ -156,6 +177,35 @@ public class Client extends Application {
         ClientTask task = new CloseConnection();
         tasks.add(task);
         executor.execute(task);
+    }
+
+    /*
+     * Checks for configuration, if it does not exist it creates it prompting the user
+     */
+    public void checkConfiguration() {
+        Path conf = Configuration.path;
+
+        if (conf.toFile().exists()) {
+            ReadConfiguration task = new ReadConfiguration(conf);
+            executor.execute(task);
+        } else {
+            AskAccount task = new AskAccount();
+            executor.execute(task);
+        }
+    }
+
+    /*
+     * Reads config on disk
+     */
+    public void readConfiguration() {
+        accountsContent.clear();
+        for (String a : Configuration.instance.getAccounts()) {
+            accountsContent.add(a);
+        }
+        currentAccount = Configuration.instance.getCurrentAccount();
+        Platform.runLater(() -> controller.refreshInterface());
+
+        establishConnection();
     }
 
     public static void main(String[] args) {

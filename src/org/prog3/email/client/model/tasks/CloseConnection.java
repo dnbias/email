@@ -1,7 +1,7 @@
 package org.prog3.email.client.model.tasks;
 
-import org.prog3.email.Request;
-import org.prog3.email.RequestType;
+import org.prog3.email.model.Request;
+import org.prog3.email.model.RequestType;
 
 import java.io.IOException;
 
@@ -13,7 +13,7 @@ public class CloseConnection extends ClientTask {
 
     @Override
     public void run() {
-        if (!checkConnection()) {
+        if (!ongoingConnection.getValue()) {
             return;
         }
 

@@ -5,7 +5,6 @@ import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import org.prog3.email.server.tasks.MakeEmail;
 import org.prog3.email.server.tasks.MakeJSON;
 import org.prog3.email.server.tasks.ServerTask;
@@ -25,6 +24,7 @@ public class Model {
     private static Map<String, ObjectOutputStream> connectedClientsMap;
     private static SimpleListProperty<String> log;
     private static SimpleListProperty<String> clients;
+    private HashMap<String ,String> pendingNotifications;
 
     public Model() {
         emailsDir = new File("Emails");
@@ -43,6 +43,8 @@ public class Model {
         connectedClients = FXCollections.observableList(new ArrayList<>());
         clients = new SimpleListProperty<>();
         clients.set(connectedClients);
+        pendingNotifications = new HashMap<>();
+
         Logger.log("Model Initialized");
     }
 
@@ -51,15 +53,15 @@ public class Model {
      */
     public void addClient(String account, ObjectOutputStream out) {
         Platform.runLater(() -> connectedClientsMap.put(account, out));
-        connectedClients.add(account);
+        Platform.runLater(() -> connectedClients.add(account));
     }
 
     /*
      * Remove account from connected list
      */
     public void removeClient(String account){
-        connectedClientsMap.remove(account);
-        connectedClients.remove(account);
+        Platform.runLater(() -> connectedClientsMap.remove(account));
+        Platform.runLater( () -> connectedClients.remove(account));
     }
 
     public LinkedList<ObjectOutputStream> getConnectedOutputStreams(List<String> accounts) {
@@ -67,10 +69,32 @@ public class Model {
 
         for (String account : accounts) {
             if (connectedClientsMap.containsKey(account)) {
+                Logger.log(account + " is connected");
                 r.add(connectedClientsMap.get(account));
             }
         }
 
+        return  r;
+    }
+
+    public LinkedList<String> getConnected(List<String> accounts) {
+        LinkedList<String> r = new LinkedList<>();
+
+        for (String account : accounts) {
+            if (connectedClientsMap.containsKey(account)) {
+                Logger.log(account + " is connected");
+                r.add(account);
+            }
+        }
+
+        return  r;
+    }
+
+    public LinkedList<String> getPendingNotifications(String account) {
+        LinkedList<String> r = new LinkedList<>();
+        if (pendingNotifications.containsKey(account)) {
+            r.add(pendingNotifications.remove(account));
+        }
         return  r;
     }
 
@@ -98,19 +122,28 @@ public class Model {
     /*
      * Remove email from database
      */
-    public synchronized boolean deleteEmail(Email email) {
-        boolean r = false;
-        long time = email.getDate().getTime();
-        String emailFilename = email.getSender() + File.separator + time + ".json";
-        File[] foundFiles = emailsDir.listFiles((file,name) -> name.equals(emailFilename));
+    public synchronized boolean deleteEmail(String account, Email email) {
+        boolean r = true;
+        String emailFilename = email.getId() + ".json";
+        File accountDir = new File(emailsDir + File.separator + account);
+        Logger.log(accountDir + "  " +  emailFilename);
+        File[] foundFiles = accountDir.listFiles((file,name) -> name.equals(emailFilename));
 
         if (foundFiles != null && foundFiles.length > 0) {
             for (File f : foundFiles) {
-                r = f.delete();
+                r = r && f.delete();
+                Logger.log("Deleted email: " + f.toString());
             }
         }
 
         return r;
+    }
+
+    /*
+     * Adds notifications to send next client connection check
+     */
+    public void addPendingNotification(String account, String notification) {
+        pendingNotifications.put(account,notification);
     }
 
     /*
@@ -167,49 +200,5 @@ public class Model {
     private void makeJSON(Email email, String account) {
         ServerTask task = new MakeJSON(email, account, emailsDir,this);
         executorExporting.execute(task);
-    }
-
-    // Used for initial database population or debugging
-    public void initDebug() {
-        addAccount("account@unito.it");
-        addAccount("account1@unito.it");
-        addAccount("account2@unito.it");
-
-        Email email1 = new Email("account@unito.it", "account2@unito.it",
-                "Test Email 1",
-                "Dolore sit facilis ullam rerum quod ut nihil. Facere sint iste reiciendis commodi qui. Occaecati nihil ducimus est quaerat. Laboriosam itaque deleniti qui pariatur et. Voluptatem ut repellendus consequatur debitis voluptatem.\n" +
-                "\n" +
-                "Error perferendis debitis molestiae incidunt veritatis hic earum. Et facere velit sed quam omnis aut. Laboriosam explicabo nobis dolores qui.\n" +
-                "\n" +
-                "Soluta ut fugiat veritatis ducimus libero deleniti officia. Qui nesciunt nulla qui vitae dolorum sit sunt. Veritatis accusamus non commodi earum enim excepturi culpa. Laboriosam voluptatem aperiam ipsum aspernatur omnis. Quisquam quae est sapiente ut tempore ut ad.\n" +
-                "\n" +
-                "Consequatur omnis perspiciatis nihil voluptates itaque qui voluptatem quia. Dolore repellendus recusandae ex voluptatem repellat soluta sunt et. Molestias eius natus iusto totam perspiciatis aut. Et reprehenderit vero in esse nihil debitis.\n" +
-                "\n" +
-                "Accusantium magnam voluptas necessitatibus. Et quaerat et et eveniet. Ut est ab id omnis voluptatem tenetur qui. Architecto sit officiis non temporibus perspiciatis quia. Ipsa sapiente ea est dolores repellat sunt.\n",
-                Calendar.getInstance().getTime());
-
-
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        Email email2 = new Email("account1@unito.it", "account@unito.it",
-                "Test Email 2",
-                "Magni illo iste repellat soluta magnam non ut. Ipsam et in est sequi veniam animi labore. Omnis molestias id ducimus non vero voluptates autem. Est minus quasi enim. Voluptate ea veritatis omnis. Quae reprehenderit quia sit.\n" +
-                "\n" +
-                "Quis voluptate quasi in facere voluptatem. Facilis ea consequuntur totam quia dicta itaque sed. Odio nam modi incidunt.\n" +
-                "\n" +
-                "Laudantium blanditiis dolores explicabo magni mollitia. Corporis aut amet possimus voluptatem. Quisquam fuga assumenda harum sed. Et perferendis aut tenetur ut praesentium aut at eligendi.\n" +
-                "\n" +
-                "Magni est suscipit est dolores voluptatem accusantium quis. Omnis veritatis impedit eius nemo. Explicabo inventore quisquam nesciunt aliquam accusamus. Saepe facere laudantium vel quia perferendis ullam ut. Illum sit dolor magnam ad qui dolore quia. Accusamus non provident voluptas.\n" +
-                "\n" +
-                "Non laboriosam praesentium voluptates totam id quasi est similique. Facere reiciendis voluptatem non in molestiae qui optio rerum. Ut nihil dolorem et repellat quis.\n",
-                Calendar.getInstance().getTime());
-        addEmail(email1);
-        addEmail(email2);
-
-        Logger.log("Model initialized with test contents");
     }
 }

@@ -15,6 +15,9 @@ public class NotificationController {
     @FXML
     Label lblMessage;
 
+    /*
+     * Sets the text on the notification message
+     */
     public void setNotification(String string) {
         lblMessage.setText(string);
     }

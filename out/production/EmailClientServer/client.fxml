@@ -36,9 +36,6 @@
                                              <cursor>
                                                 <Cursor fx:constant="HAND" />
                                              </cursor>
-                                             <effect>
-                                                <InnerShadow />
-                                             </effect>
                                           </Button>
                                           <Separator opacity="0.0" prefHeight="7.0" prefWidth="8.0" />
                                           <Button fx:id="btnSend" alignment="CENTER" contentDisplay="CENTER" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onSendButtonClick" prefHeight="35.0" prefWidth="35.0" textAlignment="CENTER">
@@ -48,9 +45,6 @@
                                              <cursor>
                                                 <Cursor fx:constant="HAND" />
                                              </cursor>
-                                             <effect>
-                                                <InnerShadow />
-                                             </effect>
                                           </Button>
                                        </children>
                                        <padding>
@@ -80,7 +74,7 @@
                                           <ToolBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="16.0" prefWidth="575.0">
                                             <items>
                                                 <Separator opacity="0.0" prefHeight="20.0" prefWidth="8.0" />
-                                                <Button fx:id="btnReply" layoutX="20.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onReplyButtonClick" prefHeight="30.0" prefWidth="30.0">
+                                                <Button fx:id="btnReply" layoutX="20.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onReplyButtonClick" prefHeight="20.0" prefWidth="20.0">
                                                    <opaqueInsets>
                                                       <Insets />
                                                    </opaqueInsets>
@@ -91,11 +85,11 @@
                                                       <Cursor fx:constant="HAND" />
                                                    </cursor>
                                                    <effect>
-                                                      <InnerShadow height="18.03" radius="8.515" width="18.03" />
+                                                      <InnerShadow blurType="GAUSSIAN" height="18.03" radius="8.515" width="18.03" />
                                                    </effect>
                                                 </Button>
                                                 <Separator layoutX="10.0" layoutY="10.0" opacity="0.0" prefHeight="20.0" prefWidth="8.0" />
-                                                <Button fx:id="btnForward" layoutX="34.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onForwardButtonClick" prefHeight="30.0" prefWidth="30.0">
+                                                <Button fx:id="btnForward" layoutX="34.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onForwardButtonClick" prefHeight="20.0" prefWidth="20.0">
                                                    <opaqueInsets>
                                                       <Insets />
                                                    </opaqueInsets>
@@ -110,7 +104,7 @@
                                                    </effect>
                                                 </Button>
                                                 <Separator layoutX="46.0" layoutY="10.0" opacity="0.0" prefHeight="20.0" prefWidth="8.0" />
-                                                <Button fx:id="btnDelete" layoutX="58.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onDeleteButtonClick" prefHeight="30.0" prefWidth="30.0">
+                                                <Button fx:id="btnDelete" layoutX="58.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onDeleteButtonClick" prefHeight="20.0" prefWidth="20.0">
                                                    <opaqueInsets>
                                                       <Insets />
                                                    </opaqueInsets>
@@ -124,15 +118,24 @@
                                                       <InnerShadow />
                                                    </effect>
                                                 </Button>
+                                                <Separator layoutX="82.0" layoutY="10.0" opacity="0.0" prefHeight="20.0" prefWidth="500.0" />
+                                                <Button fx:id="btnConnection" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onConnectionClick" prefHeight="20.0" prefWidth="20.0">
+                                                   <cursor>
+                                                      <Cursor fx:constant="HAND" />
+                                                   </cursor>
+                                                </Button>
                                             </items>
                                           </ToolBar>
                                           <TableView fx:id="tableEmails" prefHeight="317.0" prefWidth="560.0">
                                             <columns>
                                               <TableColumn fx:id="tableColSubject" editable="false" prefWidth="153.0" text="Subject" />
                                               <TableColumn fx:id="tableColFrom" editable="false" prefWidth="168.0" text="From" />
-                                                <TableColumn fx:id="tableColTo" editable="false" prefWidth="198.0" sortable="false" text="To" />
-                                                <TableColumn fx:id="tableColDate" editable="false" prefWidth="133.0" text="Date" />
+                                                <TableColumn fx:id="tableColTo" editable="false" prefWidth="157.0" sortable="false" text="To" />
+                                                <TableColumn fx:id="tableColDate" editable="false" prefWidth="201.0" sortType="DESCENDING" text="Date" />
                                             </columns>
+                                             <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                             </cursor>
                                           </TableView>
                                        </children>
                                        <padding>
@@ -218,10 +221,13 @@
                                                 <Pane maxWidth="-Infinity" minWidth="-Infinity" nodeOrientation="RIGHT_TO_LEFT" prefHeight="10.0" prefWidth="100.0" HBox.hgrow="NEVER" />
                                              </children>
                                           </HBox>
-                                          <TextArea fx:id="txtBody" editable="false" prefHeight="169.0" prefWidth="212.0" text="Lorem Ipsum " wrapText="true">
+                                          <TextArea fx:id="txtBody" editable="false" prefHeight="169.0" prefWidth="212.0" text="Lorem Ipsum " wrapText="true" VBox.vgrow="ALWAYS">
                                              <VBox.margin>
                                                 <Insets top="4.0" />
                                              </VBox.margin>
+                                             <cursor>
+                                                <Cursor fx:constant="TEXT" />
+                                             </cursor>
                                           </TextArea>
                                        </children>
                                        <padding>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.stage.*?>
+
+<Stage fx:id="stagePrompt" alwaysOnTop="true" height="250.0" resizable="false" title="prompt" width="300.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+   <scene>
+      <Scene stylesheets="@darkstyle.css">
+         <root>
+            <AnchorPane prefHeight="400.0" prefWidth="600.0">
+               <children>
+                  <VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <Label text="Enter Account" />
+                        <Separator opacity="0.0" orientation="VERTICAL" prefHeight="25.0" />
+                        <TextField fx:id="fieldAccount" maxWidth="-Infinity" prefWidth="140.0" />
+                        <Separator layoutX="307.0" layoutY="186.0" opacity="0.0" orientation="VERTICAL" prefHeight="70.0" />
+                        <Button fx:id="btnConfirm" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#confirmPrompt" prefHeight="25.0" prefWidth="25.0">
+                           <effect>
+                              <InnerShadow height="9.14" radius="3.3275" width="6.17" />
+                           </effect></Button>
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+         </root>
+      </Scene>
+   </scene>
+</Stage>

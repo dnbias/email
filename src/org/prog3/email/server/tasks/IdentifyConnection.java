@@ -1,5 +1,6 @@
 package org.prog3.email.server.tasks;
 
+import javafx.application.Platform;
 import org.util.logger.Logger;
 
 import java.io.IOException;

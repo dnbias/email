@@ -7,8 +7,8 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
-import org.prog3.email.Request;
-import org.prog3.email.RequestType;
+import org.prog3.email.model.Request;
+import org.prog3.email.model.RequestType;
 import org.prog3.email.model.*;
 import org.prog3.email.server.ui.*;
 import org.prog3.email.server.tasks.*;
@@ -116,8 +116,8 @@ public class Server extends Application {
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 
-            waitForIdentification(out, in);
-            waitForRequest(out,in);
+            waitForIdentification(socket, out, in);
+            waitForRequests(socket, out,in);
 
         } catch (SocketException s) {
             Logger.log(socket, "Disconnected");
@@ -128,7 +128,7 @@ public class Server extends Application {
     }
 
     // First thing for a new socket, identify the account
-    private static void waitForIdentification(ObjectOutputStream out, ObjectInputStream in)
+    private static void waitForIdentification(Socket socket, ObjectOutputStream out, ObjectInputStream in)
             throws ClassNotFoundException, IOException {
         boolean identified = false;
         while (!identified) {
@@ -149,7 +149,7 @@ public class Server extends Application {
     }
 
     // After the verification of the account, wait for the requests and serve them
-    private static void waitForRequest(ObjectOutputStream out, ObjectInputStream in)
+    private static void waitForRequests(Socket socket, ObjectOutputStream out, ObjectInputStream in)
             throws ClassNotFoundException, IOException {
         boolean openConnection = true;
         LinkedList<NotifyClient> notifications = new LinkedList<>(); // tasks to notify connected clients
@@ -163,24 +163,17 @@ public class Server extends Application {
             }
 
             if (request instanceof Request r) {
-                Logger.log(socket, r.getType() + " [" + r.getAccount() + "]");
+                if (r.getType() != RequestType.CheckNotifications) {
+                    Logger.log(socket, r.getType() + " [" + r.getAccount() + "]");
+                }
                 switch (r.getType()) {
                     case PullMessages -> task = new SendMessageList(r.getAccount(), out, in);
 
-                    case PushMessage -> {
-                        task = new SendMessage(r.getAccount(), r.getEmail(), out, in);
+                    case PushMessage -> task = new SendEmail(r.getAccount(), r.getEmail(), out, in);
 
-                        LinkedList<ObjectOutputStream> connectedReceivers =
-                                model.getConnectedOutputStreams(r.getEmail().getReceivers());
-                        if (connectedReceivers.size() > 0) { //
-                            for (int i = 0; i < connectedReceivers.size(); i++) {
-                                notifications.add(
-                                        new NotifyClient(out,in,"Message Received from " + r.getAccount()));
-                            }
-                        }
-                    }
+                    case DeleteMessage -> task = new DeleteEmail(r.getAccount(), r.getEmail(), out, in);
 
-                    case DeleteMessage -> task = new DeleteMessage(r.getAccount(), r.getEmail(), out, in);
+                    case CheckNotifications -> task = new PullPendingNotifications(r.getAccount(), out, in);
 
                     case CloseConnection -> {
                         task = new CloseConnection(socket, r.getAccount(), out, in);

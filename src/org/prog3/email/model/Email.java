@@ -4,9 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 public class Email implements Serializable {
-    //private UID id;
+    private final UUID id = UUID.randomUUID();
     private final String sender, subject, body;
     private final List<String> receivers;
     private final Date date;
@@ -27,11 +28,11 @@ public class Email implements Serializable {
         this.date = date;
     }
 
-    /*
-    public int getId() {
+
+    public UUID getId() {
         return id;
     }
-    */
+
 
     public String getSender() {
         return sender;
