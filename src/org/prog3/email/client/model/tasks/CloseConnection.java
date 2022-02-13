@@ -2,8 +2,8 @@ package org.prog3.email.client.model.tasks;
 
 import org.prog3.email.model.Request;
 import org.prog3.email.model.RequestType;
-
 import java.io.IOException;
+import java.net.SocketException;
 
 public class CloseConnection extends ClientTask {
 
@@ -31,10 +31,12 @@ public class CloseConnection extends ClientTask {
                     socket.close();
                     System.out.println(" Ok");
                 }
+            } catch (SocketException s) {
+                System.out.println("No ongoing connection");
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            ongoingConnection.set(false);
+            client.setConnected(false);
         }
     }
 }

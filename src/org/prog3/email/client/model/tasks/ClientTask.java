@@ -36,7 +36,7 @@ public abstract class ClientTask implements Runnable {
 
     public static void initialize(ClientController clientController, BooleanProperty connected, String currentAccount) {
         controller = clientController;
-        ongoingConnection = connected;
+        ongoingConnection.bind(connected);
         account = currentAccount;
     }
 
@@ -52,7 +52,7 @@ public abstract class ClientTask implements Runnable {
     protected synchronized boolean checkConnection() {
         if (!ongoingConnection.getValue()) {
             System.out.println("No connection");
-            controller.notify("No Connection");
+            return false;
         }
 
         // check if there pending notifications
@@ -79,7 +79,8 @@ public abstract class ClientTask implements Runnable {
             }
         } catch (SocketException s) {
             controller.notify("No Connection");
-            Platform.runLater(() -> ongoingConnection.set(false));
+            ongoingConnection.set(false);
+            return false;
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }

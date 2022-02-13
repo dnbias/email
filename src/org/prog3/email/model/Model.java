@@ -24,7 +24,7 @@ public class Model {
     private static Map<String, ObjectOutputStream> connectedClientsMap;
     private static SimpleListProperty<String> log;
     private static SimpleListProperty<String> clients;
-    private HashMap<String ,String> pendingNotifications;
+    private HashMap<String ,LinkedList<String>> pendingNotifications;
 
     public Model() {
         emailsDir = new File("Emails");
@@ -93,7 +93,7 @@ public class Model {
     public LinkedList<String> getPendingNotifications(String account) {
         LinkedList<String> r = new LinkedList<>();
         if (pendingNotifications.containsKey(account)) {
-            r.add(pendingNotifications.remove(account));
+            r = pendingNotifications.remove(account);
         }
         return  r;
     }
@@ -143,7 +143,10 @@ public class Model {
      * Adds notifications to send next client connection check
      */
     public void addPendingNotification(String account, String notification) {
-        pendingNotifications.put(account,notification);
+        if (!pendingNotifications.containsKey(account)) {
+            pendingNotifications.put(account, new LinkedList<>());
+        }
+        pendingNotifications.get(account).add(notification);
     }
 
     /*

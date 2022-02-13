@@ -42,7 +42,6 @@ public class Client extends Application {
 
     public Client() {
         accountsContent = FXCollections.observableArrayList(new ArrayList<>());
-        //accountsContent.add("account@unito.it"); // default DEBUG account
         accounts = new SimpleListProperty<>();
         accounts.set(accountsContent);
         host = "localhost";
@@ -53,7 +52,6 @@ public class Client extends Application {
         connected = new SimpleBooleanProperty();
         connected.set(connectedValue);
         controller = new ClientController(System.out);
-        //ClientTask.initialize(controller, connected, accountsContent.get(currentAccount));
         ClientTask.initialize(this, controller, connected);
     }
 
@@ -99,6 +97,8 @@ public class Client extends Application {
 
         System.out.println("Executed...");
         controller.initialize(this);
+
+        checkConnection();
     }
 
     public ListProperty<Email> inboxProperty() {
@@ -119,7 +119,7 @@ public class Client extends Application {
      * Connect to the server, identify and pull emails if successful
      */
     public void establishConnection() {
-        if (!connectedValue) {
+        if (!connected.getValue()) {
             System.out.println("Connecting to server...");
             ClientTask task = new ConnectToServer(host, port, accountsContent.get(currentAccount));
             tasks.add(task);
@@ -135,8 +135,12 @@ public class Client extends Application {
     public void checkConnection() {
         System.out.print("Start Connection Check Routine...");
         Runnable task = new CheckConnection();
-        scheduledExecutor.scheduleWithFixedDelay(task,10,5, TimeUnit.SECONDS);
+        scheduledExecutor.scheduleWithFixedDelay(task,10,10, TimeUnit.SECONDS);
         System.out.println("OK");
+    }
+
+    public  void stopConnectionCheck() {
+        scheduledExecutor.shutdown();
     }
 
     /*

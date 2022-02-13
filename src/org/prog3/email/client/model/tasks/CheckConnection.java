@@ -10,5 +10,9 @@ public class CheckConnection extends ClientTask {
         boolean r = checkConnection();
         String s = r ? "Connected" : "Disconnected";
         System.out.println(s);
+
+        if (!r) {
+            client.establishConnection();
+        }
     }
 }

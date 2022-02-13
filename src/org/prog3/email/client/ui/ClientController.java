@@ -236,7 +236,14 @@ public class ClientController {
     }
 
     @FXML
-    void onConnectionClick() { client.establishConnection(); }
+    void onConnectionClick() {
+        client.establishConnection();
+        if (connected.getValue()) {
+            notify("Connected");
+        } else {
+            notify("Disconnected");
+        }
+    }
 
     protected void showSelectedEmail(MouseEvent mouseEvent) {
         Email email = tableEmails.getSelectionModel().getSelectedItem();

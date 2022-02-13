@@ -31,8 +31,7 @@ public class ConnectToServer extends ClientTask {
                 in = new ObjectInputStream(socket.getInputStream());
             } catch (ConnectException e) {
                 System.out.println("Connection Refused");
-                controller.notify("Connection Refused");
-                client.setConnected(false);
+                ongoingConnection.set(false);
                 return;
             }
             client.setConnected(true);
@@ -59,9 +58,8 @@ public class ConnectToServer extends ClientTask {
                     }
                 }
             }
-            ongoingConnection.set(true);
-            client.checkConnection();
 
+            ongoingConnection.set(true);
         } catch (IOException | ClassNotFoundException e){
             e.printStackTrace();
         }
