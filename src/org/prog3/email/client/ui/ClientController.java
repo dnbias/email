@@ -100,10 +100,16 @@ public class ClientController {
         Platform.runLater( () -> notification.show() );
     }
 
+    /*
+     * Open account prompt
+     */
     public void promptForAccount() {
         Platform.runLater( () -> promptForAccount.show() );
     }
 
+    /*
+     * Refreshes interface properties
+     */
     public void refreshInterface() {
         boxAccount.itemsProperty().bind(client.accountProperty());
         boxAccount.setValue(client.accountProperty().get(

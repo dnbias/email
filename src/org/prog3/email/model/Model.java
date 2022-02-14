@@ -51,7 +51,7 @@ public class Model {
     /*
      * Add account to connected list
      */
-    public void addClient(String account, ObjectOutputStream out) {
+    public synchronized void addClient(String account, ObjectOutputStream out) {
         Platform.runLater(() -> connectedClientsMap.put(account, out));
         Platform.runLater(() -> connectedClients.add(account));
     }
@@ -59,7 +59,7 @@ public class Model {
     /*
      * Remove account from connected list
      */
-    public void removeClient(String account){
+    public synchronized void removeClient(String account){
         Platform.runLater(() -> connectedClientsMap.remove(account));
         Platform.runLater( () -> connectedClients.remove(account));
     }
@@ -101,7 +101,7 @@ public class Model {
     /*
      * Add account to the database
      */
-    public void addAccount(String account) {
+    public synchronized void addAccount(String account) {
         String path = "." + File.separator + emailsDir.getName() + File.separator + account;
         File fileAccount = new File(path);
         if (!fileAccount.mkdir()) {
