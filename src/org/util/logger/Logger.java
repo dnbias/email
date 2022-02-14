@@ -31,7 +31,7 @@ public class Logger {
         print(messageFinal);
     }
 
-    private static void print(String message) {
+    private static synchronized void print(String message) {
         System.out.println(message); // write to stdout
 
         try { // write to file
